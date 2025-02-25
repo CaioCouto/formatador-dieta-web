@@ -3,13 +3,17 @@
   line-height: 1.5;
   font-weight: 400;
 
+  /* Header Height */
+  --headerHeight: 60px;
+
   /* Start Colors */
     --primary: #C0C080;
     --green: #214E34;
     --blue: #124E78;
     --red: #EF271B;
     --white: #fff;
-    --black: #000;
+    --black: #000000;
+    --blackOpacity60: #00000099;
   /* End Colors */
 
   /* Start Border */
@@ -29,6 +33,7 @@ body {
   margin: 0;
   display: flex;
   min-height: 100vh;
+  position: relative;
 }
 
 .wrapper {
