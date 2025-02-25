@@ -18,3 +18,10 @@
   border-bottom: 1px solid black;
   transition: all 0.250s ease-in-out;
 }
+
+@media(max-width: 1019px) {
+  .header__menu {
+    flex-direction: column;
+    align-items: center;
+  }
+}

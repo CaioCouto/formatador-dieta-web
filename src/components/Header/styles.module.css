@@ -1,7 +1,7 @@
 .header {
   margin: 0;
-  height: 60px;
-  background-color: #c0c080;
+  height: var(--headerHeight);
+  background-color: var(--primary);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -16,4 +16,43 @@
 
 .header__logo {
   max-width: 100%;
+}
+
+.header__menu-mobile-backdrop {
+  position: absolute;
+  display: flex;
+  justify-content: flex-start;
+  top: var(--headerHeight);
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: var(--blackOpacity60);
+  transform: translateX(-100%);
+  transition: 250ms ease-in-out;
+}
+
+.header__menu-mobile-backdrop--show {
+  transform: translateX(0);
+}
+
+.header__menu-mobile-wrapper {
+  width: 300px;
+  margin-left: 0;
+  background-color: var(--primary);
+  padding: 20px;
+}
+
+.header__menu-icon-wrapper {
+  display: none;
+  cursor: pointer;
+}
+
+@media (max-width: 1019px) {
+  .header__menu-wrapper {
+    display: none;
+  }
+
+  .header__menu-icon-wrapper {
+    display: block;
+  }
 }
