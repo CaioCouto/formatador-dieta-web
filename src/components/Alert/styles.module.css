@@ -1,0 +1,34 @@
+.alert {
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  border-radius: var(--borderRadius10);
+  color: var(--white);
+  max-height: 0;
+  overflow: hidden;
+  transition: 250ms ease-in-out;
+}
+
+.alert--open {
+  max-height: unset;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+.alert--success {
+  background-color: var(--green);
+}
+
+.alert--info {
+  background-color: var(--blue);
+}
+
+.alert--error {
+  background-color: var(--red);
+}
+
+.alert__message {
+  font-size: 24px;
+}

@@ -1,0 +1,77 @@
+.formatter__titles {
+  margin-bottom: 20px;
+}
+
+.formatter__form {
+  max-width: 900px;
+  border-radius: 10px;
+  padding: 20px;
+  border-radius: 10px;
+  border: 1px solid #000;
+}
+
+.formatter__form-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.formatter__form-section-buttons {
+  flex-direction: row;
+  align-items: center;
+  gap: 20px;
+}
+
+.formatter__form-label {
+  font-size: 28px;
+}
+
+.formatter__form-file-input {
+  display: none;
+}
+
+.formatter__file-upload-wrapper {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  border: 1px dashed #000;
+  border-radius: 10px;
+  padding: 10px;
+}
+
+.formatter__file-upload-icon {
+  fill: #000;
+}
+
+.formatter__file-upload-icon--selected {
+  fill: #214E34;
+}
+
+.formatter__form-submit {
+  border-radius: 50px;
+  background-color: #214E34;
+  color: #fff;
+  border: none;
+}
+
+.formatter__form-download {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 50px;
+  padding: 0 50px;
+  border-radius: 50px;
+  font-weight: 600;
+  background-color: var(--blue);
+  color: #fff;
+  border: none;
+}
+
+.formatter__pdf-preview {
+  max-width: 900px;
+  margin: 20px auto 0;
+  height: 500px;
+}
