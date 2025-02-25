@@ -2,8 +2,9 @@ import styles from './styles.module.css';
 import logo from '../../assets/logo-only-rb.svg';
 import HeaderMenu from '../HeaderMenu';
 import { FaBars, FaXmark } from 'react-icons/fa6';
-import { useContext, useRef, useState } from 'react';
-import { ShowBackdropContext } from '../../context';
+import { useRef } from 'react';
+import { useAtom } from 'jotai';
+import { ShowBackdropAtom } from '../../jotai';
 
 function toggleMobileMenu(backdropElement, mobileMenuIsOpen, setMobileMenuIsOpen) {
   const mobileMenuClassList = backdropElement.classList;
@@ -19,14 +20,14 @@ function toggleMobileMenu(backdropElement, mobileMenuIsOpen, setMobileMenuIsOpen
 }
 
 export default function Header() {
-  let [ showBackDrop, setShowBackDrop ] = useContext(ShowBackdropContext);
+  const [ showBackdrop, setShowBackdrop ] = useAtom(ShowBackdropAtom);
   const mobileMenuBackdroprRef = useRef(null);
 
   function handleMobileMenuIconClick(e) {
     toggleMobileMenu(
       mobileMenuBackdroprRef.current, 
-      showBackDrop,
-      setShowBackDrop
+      showBackdrop,
+      setShowBackdrop
     );
   }
 
@@ -35,8 +36,8 @@ export default function Header() {
 
     toggleMobileMenu(
       mobileMenuBackdroprRef.current, 
-      showBackDrop,
-      setShowBackDrop
+      showBackdrop,
+      setShowBackdrop
     );
   }
 
@@ -62,7 +63,7 @@ export default function Header() {
 
       <section className={ styles['header__menu-icon-wrapper'] } onClick={ handleMobileMenuIconClick }>
         {
-          !showBackDrop ?
+          !showBackdrop ?
           <FaBars size={ 32 }/> :
           <FaXmark size={ 32 }/>
         }
