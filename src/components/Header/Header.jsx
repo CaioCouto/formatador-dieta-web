@@ -1,22 +1,14 @@
 import styles from './styles.module.css';
 import logo from '../../assets/logo-only-rb.svg';
 import HeaderMenu from '../HeaderMenu';
+import Backdrop from '../Backdrop';
 import { FaBars, FaXmark } from 'react-icons/fa6';
 import { useRef } from 'react';
 import { useAtom } from 'jotai';
 import { ShowBackdropAtom } from '../../jotai';
 
-function toggleMobileMenu(backdropElement, mobileMenuIsOpen, setMobileMenuIsOpen) {
-  const mobileMenuClassList = backdropElement.classList;
-
-  if(mobileMenuIsOpen) {
-    mobileMenuClassList.remove(styles["header__menu-mobile-backdrop--show"]);
-    setMobileMenuIsOpen(false);
-  }
-  else {
-    mobileMenuClassList.add(styles["header__menu-mobile-backdrop--show"]);
-    setMobileMenuIsOpen(true);
-  }
+function toggleMobileMenu(mobileMenuIsOpen, setMobileMenuIsOpen) {
+  setMobileMenuIsOpen(!mobileMenuIsOpen);
 }
 
 export default function Header() {
@@ -25,17 +17,6 @@ export default function Header() {
 
   function handleMobileMenuIconClick(e) {
     toggleMobileMenu(
-      mobileMenuBackdroprRef.current, 
-      showBackdrop,
-      setShowBackdrop
-    );
-  }
-
-  function handleMobileMenuBackdropClick(e) {
-    if(e.target !== mobileMenuBackdroprRef.current) { return; }
-
-    toggleMobileMenu(
-      mobileMenuBackdroprRef.current, 
       showBackdrop,
       setShowBackdrop
     );
@@ -51,15 +32,11 @@ export default function Header() {
         <HeaderMenu />
       </section>
 
-      <section 
-        className={ `${styles["header__menu-mobile-backdrop"]}` } 
-        ref={ mobileMenuBackdroprRef } 
-        onClick={ handleMobileMenuBackdropClick }
-      >
-        <div className={ `wrapper ${styles["header__menu-mobile-wrapper"]}` } >
-          <HeaderMenu />
-        </div>
-      </section>
+      <MobileMenu
+        showBackdrop={ showBackdrop }
+        setShowBackdrop={ setShowBackdrop } 
+        mobileMenuBackdroprRef={ mobileMenuBackdroprRef }
+      />      
 
       <section className={ styles['header__menu-icon-wrapper'] } onClick={ handleMobileMenuIconClick }>
         {
@@ -69,5 +46,43 @@ export default function Header() {
         }
       </section>
     </header>
+  );
+}
+
+function MobileMenu({ showBackdrop, setShowBackdrop, mobileMenuBackdroprRef }) {
+
+  function handleMobileMenuBackdropClick(e) {
+    if(e.target !== mobileMenuBackdroprRef.current) { return; }
+
+    toggleMobileMenu(
+      showBackdrop,
+      setShowBackdrop
+    );
+  }
+
+  function setShowClass(el) {
+    if (!showBackdrop) { 
+      return ''; 
+    }
+    if (el === 'backdrop') {
+      return styles["header__menu-mobile-backdrop--show"];
+    }
+    else if (el === 'menu-wrapper') {
+      return styles["header__menu-mobile-wrapper--show"];
+    }
+  }
+
+  return (
+    <>
+      <Backdrop
+        className={ `${styles["header__menu-mobile-backdrop"]} ${ setShowClass('backdrop') }` } 
+        ref={ mobileMenuBackdroprRef } 
+        onClick={ handleMobileMenuBackdropClick }
+      />
+
+      <div className={ `wrapper ${styles["header__menu-mobile-wrapper"]} ${ setShowClass('menu-wrapper') }` } >
+        <HeaderMenu />
+      </div>
+    </>
   );
 }
