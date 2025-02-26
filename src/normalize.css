@@ -40,6 +40,7 @@ main {
 h1 {
   font-size: 2em;
   margin: 0;
+  line-height: 1;
 }
 
 /* Grouping content
@@ -70,12 +71,29 @@ pre {
    ========================================================================== */
 
 /**
+ * Sets line-height on all text elements to 1.
+ */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+a,
+label,
+span {
+  line-height: 1;
+}
+
+/**
  * Remove the gray background on active links in IE 10.
  */
 
 a {
   text-decoration: none;
   background-color: transparent;
+  box-sizing: border-box;
 }
 
 /**
@@ -173,7 +191,7 @@ select,
 textarea {
   font-family: inherit; /* 1 */
   font-size: 100%; /* 1 */
-  line-height: 1.15; /* 1 */
+  line-height: 1; /* 1 */
   margin: 0; /* 2 */
 }
 
@@ -211,6 +229,11 @@ button,
   padding: 0 50px;
   border-radius: 50px;
   font-weight: 600;
+  font-size: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
 }
 
 /**
@@ -360,4 +383,15 @@ template {
 
 [hidden] {
   display: none;
+}
+
+@media (max-width: 767px) {
+  button,
+  [type="button"],
+  [type="reset"],
+  [type="submit"] {
+    height: 40px;
+    font-size: 16px;
+    width: 100% ;
+  }
 }
