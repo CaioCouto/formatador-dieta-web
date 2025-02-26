@@ -6,7 +6,7 @@ import {
   Route
 } from 'react-router-dom';
 import { Formatter, Home } from './pages';
-import { atom, Provider } from 'jotai';
+import { Provider } from 'jotai';
 
 export default function App() {
   return (
