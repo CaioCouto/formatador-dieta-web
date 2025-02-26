@@ -190,7 +190,7 @@ export default function Formatter() {
         <Alert 
           message={ alert.message }
           type={ alert.type }
-          show={ true }
+          show={ alert.show }
         />
 
         <section className={ styles["formatter__form-section"] }>
