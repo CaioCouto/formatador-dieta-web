@@ -84,6 +84,7 @@ a,
 label,
 span {
   line-height: 1;
+  margin: 0;
 }
 
 /**
@@ -94,14 +95,6 @@ a {
   text-decoration: none;
   background-color: transparent;
   box-sizing: border-box;
-}
-
-/**
- * Remove margin on paragraphs.
- */
-
-p {
-  margin: 0;
 }
 
 /**
@@ -227,6 +220,7 @@ button,
   cursor: pointer;
   height: 50px;
   padding: 0 50px;
+  border: none;
   border-radius: 50px;
   font-weight: 600;
   font-size: 20px;
