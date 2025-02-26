@@ -1,21 +1,31 @@
-import { FaCircleCheck, FaCircleExclamation, FaCircleXmark } from 'react-icons/fa6';
 import styles from './styles.module.css';
-
-let openClass;
+import { FaCircleCheck, FaCircleExclamation, FaCircleXmark } from 'react-icons/fa6';
+import { useAtom } from 'jotai';
+import { IconSizeAtom } from '../../jotai';
+import { returnIconSizeByWindowSize } from '../../utils';
+import { useEffect } from 'react';
 
 export default function Alert({ message, type, show }) {
+  const [ iconSize, setIconSize ] = useAtom(IconSizeAtom);
+
+  useEffect(() => {
+    window.addEventListener('resize', () => {
+      setIconSize(returnIconSizeByWindowSize());
+    })
+  }, []);
+
   const classesByType = {
     'success': {
       class: 'success',
-      icon: <FaCircleCheck size={ 24 }/>
+      icon: <FaCircleCheck size={ iconSize }/>
     },
     'info': {
       class: 'info',
-      icon: <FaCircleExclamation size={ 24 }/>
+      icon: <FaCircleExclamation size={ iconSize }/>
     },
     'error': {
       class: 'error',
-      icon: <FaCircleXmark size={ 24 }/>
+      icon: <FaCircleXmark size={ iconSize }/>
     }
   };
 
