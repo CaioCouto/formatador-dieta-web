@@ -1,10 +1,12 @@
 import styles from "./styles.module.css";
 import axios from "axios";
-import { useState } from "react";
-import { FaCircleCheck, FaUpload } from "react-icons/fa6";
-import { Alert, Loader } from "../../components";
-import { showAlertComponent } from "../../utils";
+import { useEffect, useState } from "react";
+import { FaCheck, FaCircleCheck, FaDownload, FaEye, FaUpload, FaXmark } from "react-icons/fa6";
+import { Alert, Backdrop, Loader } from "../../components";
+import { returnIconSizeByWindowSize, showAlertComponent } from "../../utils";
 import { FileUploadError } from "../../classes/Error";
+import { useAtom } from "jotai";
+import { IconSizeAtom, ShowBackdropAtom } from "../../jotai";
 
 async function generateLatex(formData) {
   const latexModel = await axios.post(
@@ -27,6 +29,8 @@ async function generatePdfFromLatex(latexModel) {
 }
 
 export default function Formatter() {
+  const [ showBackdrop, setShowBackdrop ] = useAtom(ShowBackdropAtom);
+  const [ iconSize, setIconSize ] = useAtom(IconSizeAtom);
   const [ file, setFile ] = useState(null);
   const [ previewFileURL, setPreviewFileURL ] = useState(null);
   const [ downloadFileURL, setDownloadFileURL ] = useState(null);
@@ -36,6 +40,12 @@ export default function Formatter() {
     type: 'success',
     show: false
   });
+
+  useEffect(() => {
+    window.addEventListener('resize', () => {
+      setIconSize(returnIconSizeByWindowSize());
+    })
+  }, []);
 
   function handleFileSelect(e) {
     const fileInput = document.querySelector('#dieta');
@@ -72,6 +82,10 @@ export default function Formatter() {
       }, 5000);
     }
     
+  }
+
+  function handlOpenPreview(e) {
+    setShowBackdrop(true);
   }
 
   async function handleFormSubmit(e) {
@@ -119,9 +133,9 @@ export default function Formatter() {
         setAlert
       );
 
-      const dietfile = generatePdfFromLatex(latexModel);
+      const dietfile = await generatePdfFromLatex(latexModel);
 
-      setDownloadFileURL(window.URL.createObjectURL(dietfile.data));
+      setDownloadFileURL(window.URL.createObjectURL(dietfile));
 
       showAlertComponent(
         'Dieta formatada com sucesso!', 
@@ -169,14 +183,14 @@ export default function Formatter() {
 
       <form className={ `wrapper ${styles["formatter__form"]}` } onSubmit={ handleFormSubmit } noValidate>
 
-      <section className={ `${styles['formatter__titles']}` }>      
-      <h1>Formatador de Dietas</h1>
-      </section>
+        <section className={ `${styles['formatter__form-section']}` }>      
+          <h1 className={ `${styles['formatter__form-title']}` }>Formatador de Dietas</h1>
+        </section>
 
         <Alert 
           message={ alert.message }
           type={ alert.type }
-          show={ alert.show }
+          show={ true }
         />
 
         <section className={ styles["formatter__form-section"] }>
@@ -193,8 +207,8 @@ export default function Formatter() {
           <div className={ styles["formatter__file-upload-wrapper"] } onClick={ handleFileSelect }>
             {
               !file ?
-              <FaUpload size={ 25 } className={ styles["formatter__file-upload-icon"] }/> :
-              <FaCircleCheck size={ 25 } className={ styles["formatter__file-upload-icon--selected"] }/>
+              <FaUpload size={ iconSize } className={ styles["formatter__file-upload-icon"] }/> :
+              <FaCircleCheck size={ iconSize } className={ styles["formatter__file-upload-icon--selected"] }/>
             }
             <div>
               <p className={ styles["formatter__file-upload-text"] }>
@@ -208,32 +222,75 @@ export default function Formatter() {
           </div>
         </section>
         
-        <section className={ `${styles["formatter__form-section"]} ${styles["formatter__form-section-buttons"]}` }>
-          <button type="submit" className={ `${styles["formatter__form-submit"]}` }>Enviar</button>
-          {
-            !downloadFileURL ?
-            null:
-            <a href={ downloadFileURL } download={ file.name } className={ `${styles["formatter__form-download"]}` }>Download</a>
-          }
 
-          {
-            !loading ?
-            null:
-            <Loader />
-          }
-        </section>
+        {
+          !loading ?
+          <section className={ `${styles["formatter__form-section"]} ${styles["formatter__form-section-buttons"]}` }>
+            <button type="submit" className={ `${styles["formatter__form-button"]} ${styles["formatter__form-submit"]}` }>
+              <FaCheck size={ iconSize }/>
+              Formatar
+            </button>
+
+            {
+              !file ?
+              null :
+              <button 
+                type="button" 
+                className={ `${styles["formatter__form-button"]} ${styles["formatter__form-preview"]}` } 
+                onClick={ handlOpenPreview }
+              >
+                <FaEye size={ iconSize }/>
+                Preview
+              </button>
+            }
+            
+            {
+              !downloadFileURL ?
+              null:
+              <a href={ downloadFileURL } download={ file.name } className={ `${styles["formatter__form-download"]}` }>
+                <FaDownload size={ iconSize }/>
+                Download
+              </a>
+            }
+          </section>
+          : <Loader />
+        }
       </form>
-        
+      
       {
-        !file && (!previewFileURL && !downloadFileURL) ?
+        !showBackdrop ?
         null :
-        <div className={ styles["formatter__pdf-preview"] }>
-          <h2 className={ styles["formatter__pdf-preview-title"] }>Pré-visualização: { file.name }</h2>
+        <PreviewModal 
+          file={ file }
+          downloadFileURL ={ downloadFileURL }
+          previewFileURL={ previewFileURL }
+          iconSize={ iconSize }
+        />
+      }
+    </main>
+  );
+}
+
+function PreviewModal({ file, downloadFileURL, previewFileURL, iconSize }) {
+  const [ showBackdrop, setShowBackdrop ] = useAtom(ShowBackdropAtom);
+
+  function handleCloseIconClick(e) {
+    setShowBackdrop(false);
+  }
+ 
+  if(showBackdrop && (downloadFileURL || previewFileURL)) {
+    return (
+      <Backdrop className={ styles['formatter__pdf-backdrop'] }>
+        <div className={ `wrapper ${styles["formatter__pdf-preview"]}` }>
+          <div className={ `wrapper ${styles["formatter__pdf-preview-header"]}` }>
+            <h2 className={ styles["formatter__pdf-preview-title"] }>{ file.name }</h2>
+            <FaXmark size={ iconSize } className={ styles["formatter__pdf-preview-icon"] } onClick={ handleCloseIconClick }/>
+          </div>
           <object data={ downloadFileURL? downloadFileURL : previewFileURL } type="application/pdf" width="100%" height="100%">
             <p>Alternative text - include a link <a href={ downloadFileURL? downloadFileURL : previewFileURL }>to the PDF!</a></p>
           </object>
         </div>
-      }
-    </main>
-  );
+      </Backdrop>
+    );
+  }
 }
