@@ -1,13 +1,13 @@
 import { Link } from 'react-router-dom';
 import styles from './styles.module.css';
 import { useAtom } from 'jotai';
-import { ShowBackdropAtom } from '../../jotai';
+import { OpenMobileMenuAtom } from '../../jotai';
 
 export default function Headermenu() {
-  const [ showBackdrop, setShowBackdrop ] = useAtom(ShowBackdropAtom);
+  const [ openMobileMenu, setOpenMobileMenu ] = useAtom(OpenMobileMenuAtom);
 
   function handleLinkClick() {
-    setShowBackdrop(false);
+    setOpenMobileMenu(false);
   }
 
   return (
