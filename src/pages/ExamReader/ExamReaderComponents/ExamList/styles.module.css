@@ -1,0 +1,67 @@
+.examlist__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.examlist__exams-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.examlist__exam {
+  width: 45%;
+  flex-grow: 1;
+  box-sizing: border-box;
+  padding: 20px;
+  background-color: var(--primary);
+  margin-bottom: 20px;
+  border-radius: var(--borderRadius10);
+}
+
+.examlist__exam-info {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.examlist__exam-info-text {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.examlist__exam-options {
+  display: flex;
+  gap: 10px;
+}
+
+.examlist__edit-icon,
+.examlist__delete-icon {
+  cursor: pointer;
+}
+
+.examlist__edit-icon {
+  fill: var(--blue);
+}
+
+.examlist__delete-icon {
+  fill: var(--red);
+}
+
+.examlist__exam-name {
+  font-size: 24px;
+}
+
+.examlist__exam-table {
+  width: 100%
+}
+
+.examlist__exam-table-row {
+  text-align: center;
+}
+
+@media (max-width: 479px) {
+}

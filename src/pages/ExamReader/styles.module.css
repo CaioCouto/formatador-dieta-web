@@ -1,0 +1,22 @@
+.examreader__title {
+  margin-bottom: 20px;
+}
+
+.examreader__content-wrapper {
+  display: flex;
+  gap: 20px;
+}
+
+.examreader__options {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 300px;
+}
+
+.examreader__content {
+  flex-grow: 1;
+}
+
+@media (max-width: 479px) {
+}
