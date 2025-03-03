@@ -5,20 +5,20 @@ import Backdrop from '../Backdrop';
 import { FaBars, FaXmark } from 'react-icons/fa6';
 import { useRef } from 'react';
 import { useAtom } from 'jotai';
-import { ShowBackdropAtom } from '../../jotai';
+import { OpenMobileMenuAtom } from '../../jotai';
 
 function toggleMobileMenu(mobileMenuIsOpen, setMobileMenuIsOpen) {
   setMobileMenuIsOpen(!mobileMenuIsOpen);
 }
 
 export default function Header() {
-  const [ showBackdrop, setShowBackdrop ] = useAtom(ShowBackdropAtom);
+  const [ openMobileMenu, setOpenMobileMenu ] = useAtom(OpenMobileMenuAtom);
   const mobileMenuBackdroprRef = useRef(null);
 
   function handleMobileMenuIconClick(e) {
     toggleMobileMenu(
-      showBackdrop,
-      setShowBackdrop
+      openMobileMenu,
+      setOpenMobileMenu
     );
   }
 
@@ -33,14 +33,14 @@ export default function Header() {
       </section>
 
       <MobileMenu
-        showBackdrop={ showBackdrop }
-        setShowBackdrop={ setShowBackdrop } 
+        openMobileMenu={ openMobileMenu }
+        setOpenMobileMenu={ setOpenMobileMenu } 
         mobileMenuBackdroprRef={ mobileMenuBackdroprRef }
       />      
 
       <section className={ styles['header__menu-icon-wrapper'] } onClick={ handleMobileMenuIconClick }>
         {
-          !showBackdrop ?
+          !openMobileMenu ?
           <FaBars size={ 32 }/> :
           <FaXmark size={ 32 }/>
         }
@@ -49,19 +49,20 @@ export default function Header() {
   );
 }
 
-function MobileMenu({ showBackdrop, setShowBackdrop, mobileMenuBackdroprRef }) {
+function MobileMenu({ mobileMenuBackdroprRef }) {
+  const [ openMobileMenu, setOpenMobileMenu ] = useAtom(OpenMobileMenuAtom);
 
   function handleMobileMenuBackdropClick(e) {
     if(e.target !== mobileMenuBackdroprRef.current) { return; }
 
     toggleMobileMenu(
-      showBackdrop,
-      setShowBackdrop
+      openMobileMenu,
+      setOpenMobileMenu
     );
   }
 
   function setShowClass(el) {
-    if (!showBackdrop) { 
+    if (!openMobileMenu) { 
       return ''; 
     }
     if (el === 'backdrop') {
