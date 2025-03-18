@@ -1,0 +1,132 @@
+.editor__splash {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  align-items: center;
+}
+
+.editor__form {
+  max-width: 900px;
+  padding: 0;
+}
+
+.editor__form-back {
+  background-color: var(--blue);
+  color: var(--white);
+  width: fit-content;
+  padding: 10px;
+  border-radius: var(--borderRadius10);
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.editor__form-section,
+.editor__form-subsection,
+.editor__form-subsection-inputs,
+.editor__form-subsubsection,
+.editor__form-delete-icon-wrapper,
+.editor__form-actions {
+  display: flex;
+  width: 100%;
+}
+
+.editor__form-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.section-title-wrapper {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.section-reference-values {
+  font-size: 14px;
+  text-decoration: underline;
+}
+
+.editor__form-input,
+.editor__form-select {
+  padding: 10px;
+  border: 1px solid var(--black);
+  border-radius: var(--borderRadius10);
+}
+
+.editor__form-input:disabled,
+.editor__form-select:disabled {
+  border: none;
+}
+
+.editor__form-input:focus {
+  border: 1px solid var(--blue);
+}
+
+.editor__form-subsection {
+  flex-direction: column;
+  gap: 10px;
+  padding: 10px;
+  box-sizing: border-box;
+  margin: 0;
+}
+
+.editor__form-subsection-inputs {
+  gap: 10px;
+}
+
+.editor__form-subsubsection {
+  flex-direction: column;
+  gap: 10px;
+}
+
+.editor__form-delete-icon-wrapper {
+  width: unset;
+  align-items: center;
+  background-color: var(--red);
+  color: var(--white);
+  gap: 10px;
+}
+
+.editor__form-delete-icon {
+  fill: var(--white);
+  cursor: pointer;
+}
+
+.editor__form-actions {
+  gap: 20px;
+}
+
+.editor__form-submit,
+.editor__form-cancel {
+  color: var(--white);
+}
+
+.editor__form-submit {
+  background-color: var(--green);
+}
+
+.editor__form-cancel {
+  background-color: var(--red);
+}
+
+
+@media (max-width: 767px) {
+  .editor__form-subsection-inputs {
+    flex-direction: column;
+  }
+  
+  .editor__form-subsection-inputs {
+    gap: 10px;
+  }
+
+  .editor__form-actions {
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 479px) {
+}

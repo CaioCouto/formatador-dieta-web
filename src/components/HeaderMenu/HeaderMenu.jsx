@@ -19,7 +19,7 @@ export default function Headermenu() {
         <Link to="/formatador" className={ styles["header__menu-link"] } onClick={ handleLinkClick }>Formatador de Dietas</Link>
       </li>
       <li className={ styles["header__menu-item"] }>
-        <Link to="/ExamReader" className={ styles["header__menu-link"] } onClick={ handleLinkClick }>Leitor de Exames</Link>
+        <Link to="/exams/list" className={ styles["header__menu-link"] } onClick={ handleLinkClick }>Leitor de Exames</Link>
       </li>
     </ul>
   );

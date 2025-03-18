@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { FaCheck, FaCircleCheck, FaDownload, FaEye, FaUpload, FaXmark } from "react-icons/fa6";
 import { Alert, Backdrop, Loader } from "../../components";
 import { returnIconSizeByWindowSize, showAlertComponent } from "../../utils";
-import { FileUploadError } from "../../classes/Error";
+import { FileUploadError } from "../../classes";
 import { useAtom } from "jotai";
 import { ExamReaderAddExamAtom, IconSizeAtom, ShowBackdropAtom } from "../../jotai";
 import { AddExamModal, ExamList } from "./ExamReaderComponents";

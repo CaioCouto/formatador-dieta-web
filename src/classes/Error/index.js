@@ -1,5 +1,6 @@
-import { FileUploadError } from "./Error";
+import { EmptyExamResultsError, FileUploadError } from "./Error";
 
 export {
-  FileUploadError
+  EmptyExamResultsError,
+  FileUploadError,
 };

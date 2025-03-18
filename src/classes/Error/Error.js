@@ -12,6 +12,22 @@ class FileUploadError extends Error {
   }
 };
 
+class EmptyExamNameError extends Error {
+  constructor(message) {
+    super(message);
+    this.name = 'EmptyExamNameError';
+  }
+};
+
+class EmptyExamResultsError extends Error {
+  constructor(message) {
+    super(message);
+    this.name = 'EmptyExamResultsError';
+  }
+};
+
 export {
-  FileUploadError
+  FileUploadError,
+  EmptyExamNameError,
+  EmptyExamResultsError,
 };

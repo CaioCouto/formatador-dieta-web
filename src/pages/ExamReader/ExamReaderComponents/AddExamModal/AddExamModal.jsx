@@ -7,8 +7,10 @@ import styles from './styles.module.css';
 import { FaCheck, FaXmark } from "react-icons/fa6";
 import { returnIconSizeByWindowSize, showAlertComponent } from "../../../../utils";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 export default function AddExamModal() {
+  const navigate = useNavigate();
   const [openAddExamModal, setOpenaddExamModal] = useAtom(ExamReaderAddExamAtom);
   const backdropRef = useRef(null);
   const closeIconRef = useRef(null);
@@ -73,6 +75,8 @@ export default function AddExamModal() {
         true,
         setAlert
       );
+
+      navigate(`/exams/${exam.id}`);
       
     } catch (error) {
       console.log(error);

@@ -11,13 +11,19 @@
   gap: 20px;
 }
 
+.examlist__exams-wrapper::after {
+  content: '';
+  flex-grow: 1;
+  width: 45%;
+  height: 0;
+}
+
 .examlist__exam {
   width: 45%;
   flex-grow: 1;
   box-sizing: border-box;
   padding: 20px;
   background-color: var(--primary);
-  margin-bottom: 20px;
   border-radius: var(--borderRadius10);
 }
 
