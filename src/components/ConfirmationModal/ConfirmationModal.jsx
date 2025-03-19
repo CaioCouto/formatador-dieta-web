@@ -1,5 +1,5 @@
 import styles from './styles.module.css';
-import { FaCircleCheck, FaCircleExclamation, FaXmark } from 'react-icons/fa6';
+import { FaXmark } from 'react-icons/fa6';
 import { useAtom } from 'jotai';
 import { ConfirmationModalAtom, IconSizeAtom } from '../../jotai';
 import { returnIconSizeByWindowSize } from '../../utils';
@@ -17,6 +17,12 @@ export default function ConfirmationModal({ message, onConfirm }) {
     })
   }, []);
 
+  function returnShowClass() {
+    if (confirmationModal.show) {
+      return styles['modal--show'];
+    }
+  }
+
   function handleModalCloseButtonClick() {
     setConfirmationModal({
       ...confirmationModal,
@@ -26,11 +32,13 @@ export default function ConfirmationModal({ message, onConfirm }) {
 
   return (
     <>
-      <Backdrop
-        className={styles["editor__form-backdrop"]}
-        onClick={ handleModalCloseButtonClick }
-      />
-      <div className={ styles['modal'] }>
+      {
+        confirmationModal.show ?
+        <Backdrop onClick={ handleModalCloseButtonClick } />
+        : null
+      }
+
+      <div className={ `${styles['modal']} ${ returnShowClass() }` }>
         <div className={ styles['modal__header']}>
           <h2>Cuidado!</h2>
 
