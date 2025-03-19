@@ -1,5 +1,5 @@
 import { useAtom } from "jotai";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { ExamReaderAddExamAtom } from "../../../../jotai";
 import { Alert, Backdrop, Loader } from "../../../../components";
 
@@ -11,9 +11,7 @@ import { useNavigate } from "react-router-dom";
 
 export default function AddExamModal() {
   const navigate = useNavigate();
-  const [openAddExamModal, setOpenaddExamModal] = useAtom(ExamReaderAddExamAtom);
-  const backdropRef = useRef(null);
-  const closeIconRef = useRef(null);
+  const [ openAddExamModal, setOpenaddExamModal ] = useAtom(ExamReaderAddExamAtom);
   const [ loading, setLoading ] = useState(false);
   const [ examName, setExamName ] = useState('');
   const [ showHelperText, setShowHelperText ] = useState({
@@ -28,11 +26,14 @@ export default function AddExamModal() {
 
   useEffect(() => { setExamName(''); }, []);
 
-  function handleCloseIconClick(e) {
-    const target = e.target;
-    if(target === closeIconRef.current || target === backdropRef.current) { 
-      setOpenaddExamModal(false);
+  function returnShowClass() {
+    if(openAddExamModal) {
+      return styles["modal--show"];
     }
+  }
+
+  function handleCloseIconClick(e) {
+    setOpenaddExamModal(false);
   }
 
   function handleExamNameChange(e) {
@@ -76,6 +77,8 @@ export default function AddExamModal() {
         setAlert
       );
 
+      setOpenaddExamModal(false);
+
       navigate(`/exams/${exam.id}`);
       
     } catch (error) {
@@ -91,52 +94,55 @@ export default function AddExamModal() {
 
   }
 
-  if(openAddExamModal) {
-    return (
-      <Backdrop className={styles['examreader-backdrop']} onClick={ handleCloseIconClick } ref={backdropRef}>
-        <div className={`wrapper ${styles["modal"]} ${openAddExamModal ? styles["modal--show"] : ''}`}>
-          <div className={styles["modal__header"]}>
-            <h2 className={styles["title"]}>Adicionar exame</h2>
+  return (
+    <>
+      {
+        openAddExamModal ?
+        <Backdrop onClick={ handleCloseIconClick }/>
+        : null
+      }
 
-            <div className={styles["modal__icon-wrapper"]} onClick={ handleCloseIconClick }>
-              <FaXmark 
-                size={ returnIconSizeByWindowSize() } 
-                className={ styles["modal__icon"] } 
-                ref={closeIconRef}
-              />
-            </div>
+      <div className={`wrapper ${styles["modal"]} ${ returnShowClass() }`}>
+        <div className={styles["modal__header"]}>
+          <h2 className={styles["title"]}>Adicionar exame</h2>
+
+          <div className={styles["modal__icon-wrapper"]} onClick={ handleCloseIconClick }>
+            <FaXmark 
+              size={ returnIconSizeByWindowSize() } 
+              className={ styles["modal__icon"] }
+            />
           </div>
-
-          <Alert
-            message={ alert.message }
-            type={ alert.type }
-            show={ alert.show }
-          />
-
-          <form className={styles["modal__form"]} onSubmit={ handleFormSubmit }>
-            <section className={styles["modal__form-section"]}>
-              <label htmlFor="examName" className={styles["modal__form-label"]}>Nome do exame:</label>
-              <input type="text" id="examName" className={styles["modal__form-input"]} onChange={ handleExamNameChange }/>
-              {
-                !showHelperText.examName ?
-                null :
-                <p className={ styles["modal__form-error"]} >O nome do exame deve estar preenchido</p>
-              }
-            </section>
-              
-            <button type="submit" className={styles["modal__form-submit"]}>
-              {
-                loading ?
-                <Loader/> :
-                <>
-                  Salvar
-                  <FaCheck size={returnIconSizeByWindowSize()}/>
-                </>  
-              }
-            </button>
-          </form>
         </div>
-      </Backdrop>
-    );
-  }
+
+        <Alert
+          message={ alert.message }
+          type={ alert.type }
+          show={ alert.show }
+        />
+
+        <form className={styles["modal__form"]} onSubmit={ handleFormSubmit }>
+          <section className={styles["modal__form-section"]}>
+            <label htmlFor="examName" className={styles["modal__form-label"]}>Nome do exame:</label>
+            <input type="text" id="examName" className={styles["modal__form-input"]} onChange={ handleExamNameChange }/>
+            {
+              !showHelperText.examName ?
+              null :
+              <p className={ styles["modal__form-error"]} >O nome do exame deve estar preenchido</p>
+            }
+          </section>
+            
+          <button type="submit" className={styles["modal__form-submit"]}>
+            {
+              loading ?
+              <Loader/> :
+              <>
+                Salvar
+                <FaCheck size={returnIconSizeByWindowSize()}/>
+              </>  
+            }
+          </button>
+        </form>
+      </div>
+    </>
+  );
 }
