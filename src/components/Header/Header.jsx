@@ -23,28 +23,30 @@ export default function Header() {
   }
 
   return (
-    <header className={ `wrapper ${styles['header']}` }>
-      <section className={ styles["header__logo-wrapper"] }>
-        <img src={ logo } alt="logo" className={ styles["header__logo"] } />
-      </section>
+    <header className={ `${styles['header']}` }>
+      <div className={ `wrapper ${styles['header__content']}` }>
+        <section className={ styles["header__logo-wrapper"] }>
+          <img src={ logo } alt="logo" className={ styles["header__logo"] } />
+        </section>
 
-      <section className={ styles["header__menu-wrapper"] }>
-        <HeaderMenu />
-      </section>
+        <section className={ styles["header__menu-wrapper"] }>
+          <HeaderMenu />
+        </section>
 
-      <MobileMenu
-        openMobileMenu={ openMobileMenu }
-        setOpenMobileMenu={ setOpenMobileMenu } 
-        mobileMenuBackdroprRef={ mobileMenuBackdroprRef }
-      />      
+        <MobileMenu
+          openMobileMenu={ openMobileMenu }
+          setOpenMobileMenu={ setOpenMobileMenu } 
+          mobileMenuBackdroprRef={ mobileMenuBackdroprRef }
+        />      
 
-      <section className={ styles['header__menu-icon-wrapper'] } onClick={ handleMobileMenuIconClick }>
-        {
-          !openMobileMenu ?
-          <FaBars size={ 32 }/> :
-          <FaXmark size={ 32 }/>
-        }
-      </section>
+        <section className={ styles['header__menu-icon-wrapper'] } onClick={ handleMobileMenuIconClick }>
+          {
+            !openMobileMenu ?
+            <FaBars size={ 32 }/> :
+            <FaXmark size={ 32 }/>
+          }
+        </section>
+      </div>
     </header>
   );
 }

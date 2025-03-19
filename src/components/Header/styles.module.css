@@ -2,11 +2,15 @@
   margin: 0;
   height: var(--headerHeight);
   background-color: var(--primary);
+  margin-bottom: 20px;
+}
+
+.header__content {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
-  max-width: unset;
+  height: 100%;
+
 }
 
 .header__logo-wrapper {
