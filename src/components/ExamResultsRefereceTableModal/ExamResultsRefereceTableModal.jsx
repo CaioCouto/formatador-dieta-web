@@ -66,7 +66,7 @@ export default function ExamResultsRefereceTableModal({ results }) {
               {
                 formatedResults.map((result, index) => (
                   <tr key={ index } className={ styles["modal__table-row"] }>
-                    <td >
+                    <td className={ styles["modal__table-data"] }>
                       { returnExamResultsIntervals(formatedResults, index) }
                     </td>
                     <td>{ result.resultado }</td>

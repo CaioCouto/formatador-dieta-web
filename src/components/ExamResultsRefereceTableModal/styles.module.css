@@ -35,6 +35,10 @@
   text-align: center;
 }
 
+.modal__table-data {
+  width: 50%;
+}
+
 .modal__table-row:nth-of-type(odd) {
   background-color: #e5e5e5;
 }
