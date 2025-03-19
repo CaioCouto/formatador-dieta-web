@@ -25,7 +25,7 @@
 .header__menu-mobile-backdrop,
 .header__menu-mobile-wrapper {
   position: absolute;
-  top: var(--headerHeight);
+  top: 0;
   bottom: 0;
   left: 0;
 }
@@ -42,10 +42,10 @@
 }
 
 .header__menu-mobile-wrapper {
-  width: 300px;
+  width: 90%;
   margin-left: 0;
   background-color: var(--primary);
-  padding: 20px;
+  padding: 10px 0;
   z-index: 1;
   transform: translateX(-100%);
   transition: 250ms ease-in-out;
@@ -53,6 +53,19 @@
 
 .header__menu-mobile-wrapper--show {
   transform: translateX(0);
+}
+
+.header__menu-mobile-header { 
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--black);
+  padding-bottom: 10px;
+  margin-bottom: 20px;
+}
+
+.header__menu-mobile-logo {
+  width: 30px;
 }
 
 .header__menu-icon-wrapper {
