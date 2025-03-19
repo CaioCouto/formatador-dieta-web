@@ -191,8 +191,8 @@ function ReferenceTable({ results }) {
         <tbody>
           {
             results.map((result, index) => (
-              <tr key={ index }  className={ styles["examlist__exam-table-row"] }>
-                <td >
+              <tr key={ index } className={ styles["examlist__exam-table-row"] }>
+                <td className={ styles["examlist__exam-table-data"] }>
                   { returnExamResultsIntervals(results, index) }
                 </td>
                 <td>{ result.resultado }</td>

@@ -14,12 +14,14 @@
 .examlist__exams-wrapper::after {
   content: '';
   flex-grow: 1;
-  width: 45%;
+  flex-shrink: 1;
+  width: 60%;
   height: 0;
 }
 
 .examlist__exam {
-  width: 45%;
+  width: 30%;
+  max-width: 32.4%;
   flex-grow: 1;
   box-sizing: border-box;
   padding: 20px;
@@ -69,5 +71,34 @@
   text-align: center;
 }
 
-@media (max-width: 479px) {
+.examlist__exam-table-data {
+  width: 50%;
+}
+
+@media (max-width: 1028px) {
+
+  .examlist__exams-wrapper::after {
+    width: 45%;
+  }
+
+  .examlist__exam {
+    width: 45%;
+    max-width: unset;
+  }
+}
+
+@media (max-width: 767px) {
+  .examlist__exam {
+    width: 100%;
+  }
+}
+
+@media (max-width: 767px) {
+  .examlist__exam-name {
+    font-size: 20px;
+  }
+
+  .examlist__exam-description {
+    font-size: 14px;
+  }
 }
