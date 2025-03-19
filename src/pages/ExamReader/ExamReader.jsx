@@ -1,26 +1,29 @@
 import styles from "./styles.module.css";
-import axios, { all, Axios } from "axios";
-import { useEffect, useRef, useState } from "react";
-import { FaCheck, FaCircleCheck, FaDownload, FaEye, FaUpload, FaXmark } from "react-icons/fa6";
-import { Alert, Backdrop, Loader } from "../../components";
-import { returnIconSizeByWindowSize, showAlertComponent } from "../../utils";
-import { FileUploadError } from "../../classes";
-import { useAtom } from "jotai";
-import { ExamReaderAddExamAtom, IconSizeAtom, ShowBackdropAtom } from "../../jotai";
 import { AddExamModal, ExamList } from "./ExamReaderComponents";
+import { useState } from "react";
 
 const optionButtons = [
-  { label: 'Exames' },
-  { label: 'Pacientes' }
+  { 
+    label: 'Exames', 
+    active: true
+  },
+  { 
+    label: 'Pacientes', 
+    active: false 
+  }
 ]
 
 export default function ExamReader() {
-  const [ openAddExamModal, setOpenaddExamModal ] = useAtom(ExamReaderAddExamAtom);
-  const [ contentTitle, setContentTitle ] = useState('Exames');
-
-  function handleAddExamClick(e) {
-    // setOpenaddExamModal(true);
-    setContentTitle(e.target.dataset.label)
+  const [ contentToBeShown, setContentToBeShown ] = useState(optionButtons[0].label) 
+  function handleAddExamClick(index) {    
+    document.querySelectorAll('.examreader__option').forEach((option, optIndex) => {
+      const optionClasslisst = option.classList;
+      optionClasslisst.remove(styles["examreader__option--active"]);
+      if (optIndex === index) {
+        optionClasslisst.add(styles["examreader__option--active"]);
+      }
+    });
+    setContentToBeShown(optionButtons[index].label);
   }
 
   return (
@@ -31,13 +34,24 @@ export default function ExamReader() {
         <aside className={ styles["examreader__options"] }>
           {
             optionButtons.map((option, index) => (
-              <button key={ index } onClick={ handleAddExamClick } data-label={ option.label }>{ option.label }</button>
+              <button 
+              key={ index } 
+              onClick={ () => handleAddExamClick(index) } 
+              data-label={ option.label }
+              className={ `examreader__option ${index === 0 ? styles["examreader__option--active"] : ''}` }
+            >
+              { option.label }
+            </button>
             ))
           }
         </aside>
 
         <div className={ styles["examreader__content"] }>
-          <ExamList />
+          {
+            contentToBeShown === 'Exames' ?
+            <ExamList />
+            : 'Hello World'
+          }
         </div>
       </section>
 
