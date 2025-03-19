@@ -1,14 +1,15 @@
 import { useAtom } from "jotai";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { ConfirmationModalAtom, ExamReaderAddExamAtom } from "../../../../jotai";
-import { Alert, Backdrop, ConfirmationModal, Loader } from "../../../../components";
+import { Alert, ConfirmationModal, Loader } from "../../../../components";
 
 import styles from './styles.module.css';
-import { FaCheck, FaChevronDown, FaTrash, FaXmark } from "react-icons/fa6";
-import { returnExamResultsIntervals, returnIconSizeByWindowSize, showAlertComponent } from "../../../../utils";
+import { FaTrash } from "react-icons/fa6";
+import { returnExamResultsIntervals, returnIconSizeByWindowSize } from "../../../../utils";
 import axios from "axios";
 import { FaRegEdit } from "react-icons/fa";
 import { Link } from "react-router-dom";
+import AddExamModal from "../AddExamModal/AddExamModal";
 
 export default function ExamList() {
   const [ confirmationModal, setConfirmationModal ] = useAtom(ConfirmationModalAtom);
@@ -24,11 +25,8 @@ export default function ExamList() {
 
   async function getAllExams() {
     let allExams = await axios.get(`${import.meta.env.VITE_LOCALHOST_API_BASE_URL}/exams/`);
-    console.log(allExams.data.exams);
     allExams = allExams.data.exams.map(exam => {
       let resultados = exam.resultados;
-      const resultadosCopy = [...resultados];
-      console.log(resultados);
       if (resultados.length === 2) {
         const lastPos = resultados.length - 1;
         resultados.splice(1, 0, {
@@ -112,17 +110,14 @@ export default function ExamList() {
 
   return (
     <section className={ styles["examlist"] }>
-      {
-        !confirmationModal.show ?
-        null:
-        <ConfirmationModal
-          message={ confirmationModal.message }
-          onConfirm={ deleteExam }
-        />
-      }
+      <ConfirmationModal
+        message={ confirmationModal.message }
+        onConfirm={ deleteExam }
+      />
+      <AddExamModal /> 
+
 
       <div  className={ styles["examlist__header"] }>
-        
         <h2 className={ styles["examlist__title"] }>Exames</h2>
 
         <div className={ styles["examlist__options"] }>
