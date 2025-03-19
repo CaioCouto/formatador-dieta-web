@@ -11,7 +11,10 @@
 .examreader__options {
   display: flex;
   gap: 20px;
-  width: 300px;
+}
+
+.examreader__option--active {
+  border: 2px solid var(--blue);
 }
 
 .examreader__content {
