@@ -1,11 +1,8 @@
-import { Children } from "react";
 import styles from './styles.module.css';
 
-export default function Backdrop({ className, onClick, ref, children }) {
+export default function Backdrop({ onClick }) {
   
   return (
-    <div className={ `${styles['backdrop']} ${className}` } onClick={ onClick } ref={ ref }>
-      { children }
-    </div>
+    <div className={ styles['backdrop'] } onClick={ onClick }></div>
   );
 }
