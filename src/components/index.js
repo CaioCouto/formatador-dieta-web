@@ -2,6 +2,7 @@ import Alert from "./Alert";
 import Backdrop from "./Backdrop";
 import ConfirmationModal from "./ConfirmationModal";
 import ExamResultsRefereceTableModal from "./ExamResultsRefereceTableModal";
+import Footer from "./Footer";
 import Header from "./Header";
 import HeaderMenu from "./HeaderMenu";
 import Loader from "./Loader";
@@ -13,6 +14,7 @@ export {
   Backdrop,
   ConfirmationModal,
   ExamResultsRefereceTableModal,
+  Footer,
   Header,
   HeaderMenu,
   Loader,

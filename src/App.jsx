@@ -1,5 +1,5 @@
 import './App.css';
-import { Header } from './components';
+import { Footer, Header } from './components';
 import { 
   BrowserRouter as Router,
   Routes,
@@ -33,6 +33,7 @@ export default function App() {
               <Route exact path=":id" element={ <PatientReport /> }/>
             </Route>
           </Routes>
+          <Footer/>
         </Provider>
       </Router>
     </>
