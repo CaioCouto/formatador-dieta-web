@@ -280,7 +280,8 @@ function PreviewModal({ file, downloadFileURL, previewFileURL, iconSize }) {
  
   if(showBackdrop && (downloadFileURL || previewFileURL)) {
     return (
-      <Backdrop className={ styles['formatter__pdf-backdrop'] }>
+      <>
+        <Backdrop className={ styles['formatter__pdf-backdrop'] } onClick={ handleCloseIconClick }/>
         <div className={ `wrapper ${styles["formatter__pdf-preview"]}` }>
           <div className={ `wrapper ${styles["formatter__pdf-preview-header"]}` }>
             <h2 className={ styles["formatter__pdf-preview-title"] }>{ file.name }</h2>
@@ -290,7 +291,7 @@ function PreviewModal({ file, downloadFileURL, previewFileURL, iconSize }) {
             <p>Alternative text - include a link <a href={ downloadFileURL? downloadFileURL : previewFileURL }>to the PDF!</a></p>
           </object>
         </div>
-      </Backdrop>
+      </>
     );
   }
 }
