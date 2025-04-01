@@ -1,3 +1,4 @@
+import AddPatientResultModalAtom from "./AddPatientResultModalAtom";
 import ConfirmationModalAtom from "./ConfirmationModalAtom";
 import ExamReaderAddExamAtom from "./ExamReaderAddExamAtom";
 import ExamReaderAddPatientAtom from "./ExamReaderAddPatientAtom";
@@ -7,6 +8,7 @@ import OpenMobileMenuAtom from "./OpenMobileMenuAtom";
 import ShowBackdropAtom from "./ShowBackdropAtom";
 
 export {
+  AddPatientResultModalAtom,
   ConfirmationModalAtom,
   ExamReaderAddExamAtom,
   ExamReaderAddPatientAtom,

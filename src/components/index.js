@@ -5,6 +5,7 @@ import ExamResultsRefereceTableModal from "./ExamResultsRefereceTableModal";
 import Header from "./Header";
 import HeaderMenu from "./HeaderMenu";
 import Loader from "./Loader";
+import RefereceTable from "./RefereceTable";
 import SidebarMenu from "./SidebarMenu";
 
 export {
@@ -15,5 +16,6 @@ export {
   Header,
   HeaderMenu,
   Loader,
+  RefereceTable,
   SidebarMenu
 };

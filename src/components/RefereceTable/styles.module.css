@@ -1,0 +1,33 @@
+/* Default styles */
+
+.default__table-row {
+  text-align: center;
+}
+
+.default__table-row:nth-of-type(odd) {
+  background-color: #e5e5e5;
+}
+
+/* Styles */
+.table {
+  width: 100%;
+}
+
+.table-data-gender,
+.table-data-value,
+.table-data-result {
+  text-transform: capitalize;
+  line-height: 2;
+}
+
+.table-data-gender {
+  width: 25%;
+}
+
+.table-data-value {
+  width: 30%;
+}
+
+.table-data-result {
+  width: 45%;
+}

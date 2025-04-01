@@ -191,7 +191,7 @@ export default function ExamReaderExamForm() {
       filteredExamsResults = filteredExamsResults.map(item => ({ 
         ...item,
         exame_id: examId,
-        valor: Number(item.valor)
+        valor: item.valor
       }));
 
       setAlert({
@@ -421,7 +421,6 @@ function DeleteConfirmationModal({ modalMessage, onConfirm }) {
 }
 
 function FormSubSection({ allResults, index, edit, value, result, gender, onValueChange, onResultChange, onGenderChange, onDelete }) {
-  console.log(allResults.length)
   return (
     <fieldset className={styles["editor__form-subsection"]}>
       <legend className={styles["editor__form-subsection-legend"]}>

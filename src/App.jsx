@@ -5,7 +5,14 @@ import {
   Routes,
   Route
 } from 'react-router-dom';
-import { ExamReader, ExamReaderExamForm, Formatter, Home } from './pages';
+import {
+  ExamReader,
+  ExamReaderExamForm,
+  PatientReport,
+  Formatter,
+  Home,
+  PatientUpdateForm
+} from './pages';
 import { Provider } from 'jotai';
 
 export default function App() {
@@ -17,9 +24,13 @@ export default function App() {
           <Routes>
             <Route exact path="/" element={ <Home /> }/>
             <Route exact path="/formatador" element={ <Formatter /> }/>
-            <Route path='exams'>
+            <Route path="exams">
               <Route exact path="list" element={ <ExamReader /> }/>
               <Route exact path=":id" element={ <ExamReaderExamForm /> }/>
+            </Route>
+            <Route path="patients">
+              <Route exact path="edit/:id" element={ <PatientUpdateForm /> }/>
+              <Route exact path=":id" element={ <PatientReport /> }/>
             </Route>
           </Routes>
         </Provider>

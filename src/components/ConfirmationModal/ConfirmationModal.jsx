@@ -48,7 +48,7 @@ export default function ConfirmationModal({ message, onConfirm }) {
         </div>
 
         <div className={ styles['modal__body']}>
-          <p className={ styles['modal__message'] }>{ message }</p>
+          <p className={ styles['modal__message'] }>{ confirmationModal.message }</p>
           <span className={ styles['modal__message'] } >Esta ação não poderá ser desfeita.</span>
         </div>
 

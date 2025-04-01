@@ -30,6 +30,10 @@
   align-items: center;
 }
 
+.modal__header-icon-wrapper {
+  cursor: pointer;
+}
+
 .modal__body {
   line-height: 2;
 }

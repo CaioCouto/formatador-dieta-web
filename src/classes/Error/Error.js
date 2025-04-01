@@ -26,8 +26,16 @@ class EmptyExamResultsError extends Error {
   }
 };
 
+class FormFieldError extends Error {
+  constructor(message) {
+    super(message);
+    this.name = 'FormFieldError';
+  }
+};
+
 export {
   FileUploadError,
   EmptyExamNameError,
   EmptyExamResultsError,
+  FormFieldError
 };

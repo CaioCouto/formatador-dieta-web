@@ -1,7 +1,7 @@
 import { useAtom } from "jotai";
 import { useEffect, useState } from "react";
 import { ConfirmationModalAtom, ExamReaderAddExamAtom } from "../../../../jotai";
-import { Alert, ConfirmationModal, Loader } from "../../../../components";
+import { Alert, ConfirmationModal, Loader, RefereceTable } from "../../../../components";
 
 import styles from './styles.module.css';
 import { FaTrash } from "react-icons/fa6";
@@ -26,6 +26,7 @@ export default function ExamList() {
   async function getAllExams() {
     let allExams = await axios.get(`${import.meta.env.VITE_LOCALHOST_API_BASE_URL}/exams/`);
     allExams = allExams.data.exams.map(exam => {
+      const resultados_grouped_by_gender = {};
       let resultados = exam.resultados;
       if (resultados.length === 2) {
         const lastPos = resultados.length - 1;
@@ -33,9 +34,22 @@ export default function ExamList() {
           id: null,
           exame_id: resultados[lastPos].exame_id,
           valor: resultados[lastPos].valor,
-          resultado: 'Ideal'
+          resultado: 'Ideal',
+          sexo: resultados[lastPos].sexo
         });
       }
+
+      resultados.forEach(resultado => {
+        if(resultados_grouped_by_gender[resultado.sexo]) {
+          resultados_grouped_by_gender[resultado.sexo].push(resultado);
+        }
+        else {
+          resultados_grouped_by_gender[resultado.sexo] = [resultado];
+        }
+      });
+
+      exam['resultados_grouped_by_gender'] = resultados_grouped_by_gender;
+
       return exam;
     });
     
@@ -163,7 +177,14 @@ export default function ExamList() {
                 <div className={ styles["examlist__exam-results"] }>
                   <p>Este exame ainda não possui resultados cadastrados.</p>
                 </div> :
-                <ReferenceTable results={ exam.resultados } />
+                <div className={ styles["examlist__exam-results"] }>
+                  <RefereceTable 
+                    results={ exam.resultados }
+                    tableClassName={ styles["examlist__exam-table"] }
+                    tableRowClassName={ styles["examlist__exam-table-row"]}
+                    tableDataClassName={ styles["examlist__exam-table-data"]}
+                  />
+                </div>
               }
             </div>
           ))
@@ -171,31 +192,4 @@ export default function ExamList() {
       </div>
     </section>
   );
-}
-
-function ReferenceTable({ results }) {
-  return (
-    <div className={ styles["examlist__exam-results"] }>
-      <table className={ styles["examlist__exam-table"] }>
-        <thead>
-          <tr>
-            <th>Valor</th>
-            <th>Classificação</th>
-          </tr>
-        </thead>
-        <tbody>
-          {
-            results.map((result, index) => (
-              <tr key={ index } className={ styles["examlist__exam-table-row"] }>
-                <td className={ styles["examlist__exam-table-data"] }>
-                  { returnExamResultsIntervals(results, index) }
-                </td>
-                <td>{ result.resultado }</td>
-              </tr>
-            ))
-          }
-        </tbody>
-      </table>
-    </div>
-  )
 }

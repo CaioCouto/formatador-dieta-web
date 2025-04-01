@@ -1,0 +1,147 @@
+.editor__splash {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  align-items: center;
+}
+
+.patient {
+  max-width: 900px;
+}
+
+.patient__info {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.patient__info-back {
+  background-color: var(--blue);
+  color: var(--white);
+  width: fit-content;
+  padding: 10px;
+  border-radius: var(--borderRadius10);
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.patient__info-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.patient__info-options {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.patient__info-options-edit,
+.patient__info-options-delete {
+  color: var(--white);
+  cursor: pointer;
+}
+
+.patient__info-options-edit {
+  background-color: var(--blue);
+}
+
+.patient__info-options-delete {
+  background-color: var(--red);
+}
+
+.patient__results-list {
+  display: flex;
+  flex-direction: column;
+  margin: 0 auto;
+  gap: 20px;
+}
+
+.patient__results-titles {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.patient__results-wrapper {
+  background-color: var(--primary);
+  padding: 20px;
+  border-radius: var(--borderRadius10);
+  cursor: pointer;
+}
+
+.patient__results-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.patient__results-wrapper--open .patient__results-header {
+  margin-bottom: 20px;
+}
+
+.patient__results-wrapper .patient__results-header svg {
+  transform: rotate(0deg);
+  transition: 250ms ease-in-out;
+}
+
+.patient__results-wrapper--open .patient__results-header svg {
+  transform: rotate(180deg);
+}
+
+.patient__results {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  max-height: 0;
+  overflow: hidden;
+  transition: 250ms ease-in-out;
+}
+
+.patient__results-wrapper--open .patient__results {
+  max-height: unset;
+  transition: 250ms ease-in-out;
+}
+
+.patient__result {
+  display: flex;
+  width: 100%;
+  flex-grow: 1;
+  justify-content: space-between;
+}
+
+.patient__result-exam {
+  overflow: hidden; 
+  white-space: nowrap;
+}
+
+.patient__result-exam:after {
+  content: ".............................................................................................";
+}
+
+.patient__result-value {
+  white-space: nowrap;
+}
+
+@media (max-width: 767px) {
+  .patient__results-add-button {
+    width: fit-content;
+  }
+  
+  .patient__results:after {
+    display: none; 
+  }
+  
+  .patient__result {
+    width: 100%;
+  }
+}
+
+@media (max-width: 479px) {
+  .patient__results-add-button {
+    font-size: 14px;
+  }
+}

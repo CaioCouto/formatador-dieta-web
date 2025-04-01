@@ -1,29 +1,25 @@
 import styles from './styles.module.css';
-import { FaCircleCheck, FaCircleExclamation, FaXmark } from 'react-icons/fa6';
+import { FaXmark } from 'react-icons/fa6';
 import { useAtom } from 'jotai';
-import { ConfirmationModalAtom, ExamResultsRefereceTableModalAtom, IconSizeAtom } from '../../jotai';
-import { returnExamResultsIntervals, returnIconSizeByWindowSize } from '../../utils';
-import { useEffect, useRef, useState } from 'react';
+import { ExamResultsRefereceTableModalAtom, IconSizeAtom } from '../../jotai';
+import { returnIconSizeByWindowSize } from '../../utils';
+import { useEffect } from 'react';
 import Backdrop from '../Backdrop';
+import RefereceTable from '../RefereceTable';
 
-export default function ExamResultsRefereceTableModal({ results }) {
-  const confirmButtonRef = useRef(null);
+export default function ExamResultsRefereceTableModal({ examName, results }) {  
   const [ showExamResultsRefereceTableModal, setShowExamResultsRefereceTableModal ] = useAtom(ExamResultsRefereceTableModalAtom);
   const [ iconSize, setIconSize ] = useAtom(IconSizeAtom);
-  const [ formatedResults, setFormatedResults ] = useState([]);
-  
-  function generateFormatedResults() {
-    if (results.length === 2) {
-      const lastPos = results.length - 1;
-      results.splice(1, 0, {
-        id: null,
-        exame_id: results[lastPos].exame_id,
-        valor: results[lastPos].valor,
-        resultado: 'Ideal'
-      });
+
+  function returnShowClass() {
+    if(showExamResultsRefereceTableModal) {
+      return styles["modal--show"];
     }
-    setFormatedResults(results);
-  } 
+  }
+
+  function handleModalCloseButtonClick() {
+    setShowExamResultsRefereceTableModal(false);
+  }
 
   useEffect(() => {
     window.addEventListener('resize', () => {
@@ -31,50 +27,28 @@ export default function ExamResultsRefereceTableModal({ results }) {
     })
   }, []);
 
-  useEffect(() => {
-    generateFormatedResults();
-  }, [results]);
-
-  function handleModalCloseButtonClick() {
-    setShowExamResultsRefereceTableModal(false);
-  } 
-
   return (
     <>
-      <Backdrop
-        className={styles["editor__form-backdrop"]}
-        onClick={ handleModalCloseButtonClick }
-      />
-      <div className={ styles['modal'] }>
+      {
+        showExamResultsRefereceTableModal ?
+        <Backdrop
+          className={styles["editor__form-backdrop"]}
+          onClick={ handleModalCloseButtonClick }
+        />
+        : null
+      }
+      <div className={`wrapper ${styles["modal"]} ${ returnShowClass() }`}>
         <div className={ styles['modal__header']}>
           <h2>Valores de Referência</h2>
 
-          <div className={ styles['modal__header-icon-wrapper']} onClick={ handleModalCloseButtonClick}>
+          <div className={ styles['modal__header-icon-wrapper']} onClick={ handleModalCloseButtonClick }>
             <FaXmark size={ iconSize }/>
           </div>
         </div>
 
         <div className={ styles['modal__body']}>
-          <table className={ styles["modal__table"] }>
-            <thead>
-              <tr>
-                <th>Valor</th>
-                <th>Classificação</th>
-              </tr>
-            </thead>
-            <tbody>
-              {
-                formatedResults.map((result, index) => (
-                  <tr key={ index } className={ styles["modal__table-row"] }>
-                    <td className={ styles["modal__table-data"] }>
-                      { returnExamResultsIntervals(formatedResults, index) }
-                    </td>
-                    <td>{ result.resultado }</td>
-                  </tr>
-                ))
-              }
-            </tbody>
-          </table>
+          <h3  className={ styles['modal__exam-name']}>{ examName }</h3>
+          <RefereceTable results={ results } />
         </div>
       </div>
     </>

@@ -253,6 +253,10 @@ button:-moz-focusring,
   outline: 1px dotted ButtonText;
 }
 
+datalist {
+  display: block;
+}
+
 /**
  * Correct the padding in Firefox.
  */

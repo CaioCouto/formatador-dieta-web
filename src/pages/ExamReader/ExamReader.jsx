@@ -1,5 +1,5 @@
 import styles from "./styles.module.css";
-import { AddExamModal, ExamList } from "./ExamReaderComponents";
+import { AddExamModal, ExamList, PatientList } from "./ExamReaderComponents";
 import { useState } from "react";
 
 const optionButtons = [
@@ -50,7 +50,8 @@ export default function ExamReader() {
           {
             contentToBeShown === 'Exames' ?
             <ExamList />
-            : 'Hello World'
+            : 
+            <PatientList />
           }
         </div>
       </section>

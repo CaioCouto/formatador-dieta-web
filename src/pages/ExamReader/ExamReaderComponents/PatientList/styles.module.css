@@ -63,18 +63,16 @@
   font-size: 24px;
 }
 
+.examlist__exam-table {
+  width: 100%
+}
+
 .examlist__exam-table-row {
   text-align: center;
 }
 
-.examlist__exam-table-row:nth-of-type(odd) {
-  background-color: #898957;
-}
-
-.examlist__exam-table-data-sex,
-.examlist__exam-table-data--f,
-.examlist__exam-table-data--m {
-  border-bottom: 1px solid black;
+.examlist__exam-table-data {
+  width: 50%;
 }
 
 @media (max-width: 1028px) {
