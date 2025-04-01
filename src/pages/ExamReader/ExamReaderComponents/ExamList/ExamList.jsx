@@ -24,6 +24,7 @@ export default function ExamList() {
   });
 
   async function getAllExams() {
+    setLoading(true);
     let allExams = await axios.get(`${import.meta.env.VITE_LOCALHOST_API_BASE_URL}/exams/`);
     allExams = allExams.data.exams.map(exam => {
       const resultados_grouped_by_gender = {};
@@ -54,6 +55,7 @@ export default function ExamList() {
     });
     
     setExams(allExams);
+    setLoading(false);
   }
 
   function handleOpenAddExamModal(e) {
@@ -147,49 +149,75 @@ export default function ExamList() {
 
       <div className={ styles["examlist__exams-wrapper"] }>
         {
-          exams.length === 0 ?
+          loading ?
           <Loader /> :
-          exams.map((exam, index) => (
-            <div className={ styles["examlist__exam"] } key={ index }>
-              <div className={ styles["examlist__exam-info"] }>
-                <div className={ styles["examlist__exam-info-text"] }>
-                  <p className={ styles["examlist__exam-name"] }>{ exam.nome }</p>
-                  <p className={ styles["examlist__exam-description"] }> ({ exam.resultados.length } resultados)</p>
-                </div>
-
-                <div className={ styles["examlist__exam-options"] }>
-                  <Link to={ `/exams/${exam.id}` }>
-                    <FaRegEdit 
-                      size={ returnIconSizeByWindowSize() }
-                      className={ styles["examlist__edit-icon"] }
-                    />
-                  </Link>
-                  <FaTrash 
-                    size={ returnIconSizeByWindowSize() }
-                    className={ styles["examlist__delete-icon"] }
-                    onClick={(e) => openDeleteConfirmationModal(exam.id) }
-                  />
-                </div>
-              </div>
-
-              {
-                exam.resultados.length === 0 ?
-                <div className={ styles["examlist__exam-results"] }>
-                  <p>Este exame ainda não possui resultados cadastrados.</p>
-                </div> :
-                <div className={ styles["examlist__exam-results"] }>
-                  <RefereceTable 
-                    results={ exam.resultados }
-                    tableClassName={ styles["examlist__exam-table"] }
-                    tableRowClassName={ styles["examlist__exam-table-row"]}
-                    tableDataClassName={ styles["examlist__exam-table-data"]}
-                  />
-                </div>
-              }
-            </div>
-          ))
+          <List 
+            exams={ exams } 
+            setExamIdToBeDeleted={ setExamIdToBeDeleted }
+          />
         }
       </div>
     </section>
   );
+}
+
+function List({ exams, setExamIdToBeDeleted }) {
+  const [ confirmationModal, setConfirmationModal ] = useAtom(ConfirmationModalAtom);
+  
+
+  async function openDeleteConfirmationModal(examId) {
+    setExamIdToBeDeleted(examId);
+    setConfirmationModal({
+      show: true,
+      message: 'Tem certeza que deseja deletar este exame?',
+    });
+  }
+
+  return (
+    <>
+      {
+        exams.length === 0 ?
+        <p className={ styles["examlist__no-exams"] }>Nenhum exame cadastrado</p> :
+        exams.map((exam, index) => (
+          <div className={ styles["examlist__exam"] } key={ index }>
+            <div className={ styles["examlist__exam-info"] }>
+              <div className={ styles["examlist__exam-info-text"] }>
+                <p className={ styles["examlist__exam-name"] }>{ exam.nome }</p>
+                <p className={ styles["examlist__exam-description"] }> ({ exam.resultados.length } resultados)</p>
+              </div>
+
+              <div className={ styles["examlist__exam-options"] }>
+                <Link to={ `/exams/${exam.id}` }>
+                  <FaRegEdit 
+                    size={ returnIconSizeByWindowSize() }
+                    className={ styles["examlist__edit-icon"] }
+                  />
+                </Link>
+                <FaTrash 
+                  size={ returnIconSizeByWindowSize() }
+                  className={ styles["examlist__delete-icon"] }
+                  onClick={(e) => openDeleteConfirmationModal(exam.id) }
+                />
+              </div>
+            </div>
+
+            {
+              exam.resultados.length === 0 ?
+              <div className={ styles["examlist__exam-results"] }>
+                <p>Este exame ainda não possui resultados cadastrados.</p>
+              </div> :
+              <div className={ styles["examlist__exam-results"] }>
+                <RefereceTable 
+                  results={ exam.resultados }
+                  tableClassName={ styles["examlist__exam-table"] }
+                  tableRowClassName={ styles["examlist__exam-table-row"]}
+                  tableDataClassName={ styles["examlist__exam-table-data"]}
+                />
+              </div>
+            }
+          </div>
+        ))
+    }
+    </>
+  )
 }
