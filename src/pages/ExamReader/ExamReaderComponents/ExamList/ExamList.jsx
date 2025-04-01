@@ -25,37 +25,46 @@ export default function ExamList() {
 
   async function getAllExams() {
     setLoading(true);
-    let allExams = await axios.get(`${import.meta.env.VITE_LOCALHOST_API_BASE_URL}/exams/`);
-    allExams = allExams.data.exams.map(exam => {
-      const resultados_grouped_by_gender = {};
-      let resultados = exam.resultados;
-      if (resultados.length === 2) {
-        const lastPos = resultados.length - 1;
-        resultados.splice(1, 0, {
-          id: null,
-          exame_id: resultados[lastPos].exame_id,
-          valor: resultados[lastPos].valor,
-          resultado: 'Ideal',
-          sexo: resultados[lastPos].sexo
+    try {
+      let allExams = await axios.get(`${import.meta.env.VITE_LOCALHOST_API_BASE_URL}/exams/`);
+      allExams = allExams.data.exams.map(exam => {
+        const resultados_grouped_by_gender = {};
+        let resultados = exam.resultados;
+        if (resultados.length === 2) {
+          const lastPos = resultados.length - 1;
+          resultados.splice(1, 0, {
+            id: null,
+            exame_id: resultados[lastPos].exame_id,
+            valor: resultados[lastPos].valor,
+            resultado: 'Ideal',
+            sexo: resultados[lastPos].sexo
+          });
+        }
+
+        resultados.forEach(resultado => {
+          if(resultados_grouped_by_gender[resultado.sexo]) {
+            resultados_grouped_by_gender[resultado.sexo].push(resultado);
+          }
+          else {
+            resultados_grouped_by_gender[resultado.sexo] = [resultado];
+          }
         });
-      }
 
-      resultados.forEach(resultado => {
-        if(resultados_grouped_by_gender[resultado.sexo]) {
-          resultados_grouped_by_gender[resultado.sexo].push(resultado);
-        }
-        else {
-          resultados_grouped_by_gender[resultado.sexo] = [resultado];
-        }
+        exam['resultados_grouped_by_gender'] = resultados_grouped_by_gender;
+
+        return exam;
       });
-
-      exam['resultados_grouped_by_gender'] = resultados_grouped_by_gender;
-
-      return exam;
-    });
-    
-    setExams(allExams);
-    setLoading(false);
+      setExams(allExams);
+    } catch (error) {
+      if(error.name === 'AxiosError') {
+        if(error.response.status === 404) {
+          setExams([]);
+        }
+      }
+    }
+    finally {
+      setLoading(false);
+    } 
   }
 
   function handleOpenAddExamModal(e) {
