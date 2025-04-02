@@ -92,6 +92,7 @@ export default function PatientReport() {
       const examDate = result.data_exame.split('T')[0];
       const formatedResult = {
         nome_exame: exam.nome,
+        unidade_exame: exam.unidade,
         data_exame: result.data_exame.split('T')[0],
         valores_referencia: exam.resultados.filter(r => r.sexo === 'ambos' || r.sexo === 'm'),
         resultado: result.resultado
@@ -267,7 +268,7 @@ function PatientResults({ resultados, setExamNameTobeReferenced, setResultsTobeR
                     
                     <div className={ styles["patient__result-values"] }>
                       <p className={ styles["patient__result-value"] }>
-                        { result.resultado }{' '}
+                        { result.resultado }{ result.unidade_exame } {' '}
                         ({ returnPatientResultClassification(result) }) 
                       </p>
                     </div>
