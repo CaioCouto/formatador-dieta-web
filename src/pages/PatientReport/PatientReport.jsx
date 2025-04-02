@@ -118,6 +118,22 @@ export default function PatientReport() {
     navigate(`/patients/edit/${patientId}`, { replace: true });
   }
 
+  function handleDeletebuttonClick() {
+    setConfirmationModal({
+      message: 'Tem certeza que deseja excluir esse paciente?',
+      show: true,
+    });
+  }
+
+  async function handleDeletePatient() {
+    await axios.delete(`${import.meta.env.VITE_LOCALHOST_API_BASE_URL}/patients/${patientId}`); 
+    navigate('/exams/list', { replace: true });
+    setConfirmationModal({
+      ...confirmationModal,
+      show: false,
+    });
+  }
+
   useEffect(() => {
     if(!addPatientResultModal) {
       getPatientByRouteId();
@@ -127,6 +143,8 @@ export default function PatientReport() {
   return (
     <main className={ `wrapper ${styles["patient"]}` }>
       <AddPatientResultModal pacienteId={ patientId }/>
+
+      <ConfirmationModal onConfirm={ handleDeletePatient }/>
       
       {
         resultsTobeReferenced ? 
@@ -156,7 +174,10 @@ export default function PatientReport() {
                     <FaRegEdit size={ returnIconSizeByWindowSize() } />
                   </button>
 
-                  <button className={ styles["patient__info-options-delete"] }>
+                  <button
+                    className={ styles["patient__info-options-delete"] }
+                    onClick={ handleDeletebuttonClick}  
+                  >
                     Excluir
                     <FaTrash size={ returnIconSizeByWindowSize() } />
                   </button>
