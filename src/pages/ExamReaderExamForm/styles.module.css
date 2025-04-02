@@ -39,6 +39,10 @@
   margin-bottom: 15px;
 }
 
+.editor__form-section-examData {
+  flex-direction: row;
+}
+
 .section-title-wrapper {
   display: flex;
   gap: 10px;
@@ -115,6 +119,7 @@
 
 
 @media (max-width: 767px) {
+  .editor__form-section-examData,
   .editor__form-subsection-inputs {
     flex-direction: column;
   }

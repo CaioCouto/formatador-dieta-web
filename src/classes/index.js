@@ -1,7 +1,8 @@
-import { EmptyExamNameError, EmptyExamResultsError, FileUploadError } from "./Error/Error";
+import { EmptyExamNameError, EmptyExamResultsError, FileUploadError, FormFieldError } from "./Error/Error";
 
 export {
   EmptyExamNameError,
   EmptyExamResultsError,
-  FileUploadError
+  FileUploadError,
+  FormFieldError
 };

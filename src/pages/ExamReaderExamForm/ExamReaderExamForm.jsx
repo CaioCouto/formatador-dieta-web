@@ -1,18 +1,18 @@
 import styles from "./styles.module.css";
-import axios, { all, Axios } from "axios";
+import axios from "axios";
 import { useEffect, useRef, useState } from "react";
-import { FaArrowLeft, FaCheck, FaCircleCheck, FaCirclePlus, FaDownload, FaEye, FaTrash, FaUpload, FaXmark } from "react-icons/fa6";
-import { Alert, Backdrop, ConfirmationModal, ExamResultsRefereceTableModal, Loader } from "../../components";
-import { returnIconSizeByWindowSize, showAlertComponent } from "../../utils";
+import { FaArrowLeft, FaCheck, FaCirclePlus, FaTrash, FaXmark } from "react-icons/fa6";
+import { Alert, ConfirmationModal, ExamResultsRefereceTableModal, Loader } from "../../components";
+import { returnIconSizeByWindowSize } from "../../utils";
 import { useAtom } from "jotai";
-import { ConfirmationModalAtom, ExamReaderAddExamAtom, ExamResultsRefereceTableModalAtom, IconSizeAtom, ShowBackdropAtom } from "../../jotai";
+import { ConfirmationModalAtom, ExamResultsRefereceTableModalAtom } from "../../jotai";
 import { Link, useParams } from "react-router-dom";
 import { FaRegEdit } from "react-icons/fa";
-import { EmptyExamNameError, EmptyExamResultsError } from "../../classes";
+import { FormFieldError } from "../../classes";
 
-async function updateExamsNameOnDataBase(examId, examName) {
+async function updateExamDataOnDataBase(examId, examName, examUnit) {
   await axios.patch(`${import.meta.env.VITE_LOCALHOST_API_BASE_URL}/exams/${examId}`, 
-    { nome: examName }
+    { nome: examName, unidade: examUnit }
   );
 }
 
@@ -35,7 +35,6 @@ async function deleteExamResultOnDataBase(examResultId) {
 
 export default function ExamReaderExamForm() {
   const examId = Number(useParams('id').id);
-  const deleteExamButtonRef = useRef(null);
   const deleteExamResultButtonRef = useRef(null);
   const [ confirmationModal, setConfirmationModal ] = useAtom(ConfirmationModalAtom);
   const [ showExamResultsRefereceTableModal, setShowExamResultsRefereceTableModal ] = useAtom(ExamResultsRefereceTableModalAtom);
@@ -44,6 +43,7 @@ export default function ExamReaderExamForm() {
   const [ examsResults, setExamsResults ] = useState([{ valor: '', resultado: '', sexo: 'ambos' }]);
   const [ exam, setExam ] = useState(null);
   const [ examName, setExamName ] = useState('');
+  const [ examUnit, setExamunit ] = useState('');
   const [ resultIndexToBeDeleted, setResultIndexToBeDeleted ] = useState(null);
   const [ alert, setAlert ] = useState({
     message: 'Nothing yet...',
@@ -56,6 +56,7 @@ export default function ExamReaderExamForm() {
     responseExame = responseExame.data;
     setExam(responseExame);
     setExamName(responseExame.nome);
+    setExamunit(responseExame.unidade);
     if(responseExame.resultados.length > 0) {
       setExamsResults(responseExame.resultados);
     }
@@ -71,6 +72,10 @@ export default function ExamReaderExamForm() {
 
   function handleExamNameChange(e) {
     setExamName(e.target.value);
+  }
+
+  function handleExamUnitChange(e) {
+    setExamunit(e.target.value);
   }
 
   function handleResultChange(index, field, newValue) {
@@ -182,10 +187,10 @@ export default function ExamReaderExamForm() {
       
       if(!examName) {
         setExamName(exam.nome);
-        throw new EmptyExamNameError('O nome do exame não pode estar vazio.');
+        throw new FormFieldError('O nome do exame não pode estar vazio.');
       }
       else if (filteredExamsResults.length === 0) {
-        throw new EmptyExamResultsError('Pelo menos um resultado deve ser adicionado.');
+        throw new FormFieldError('Pelo menos um resultado deve ser adicionado.');
       }
 
       filteredExamsResults = filteredExamsResults.map(item => ({ 
@@ -200,7 +205,7 @@ export default function ExamReaderExamForm() {
         show: true
       })
 
-      await updateExamsNameOnDataBase(examId, examName);
+      await updateExamDataOnDataBase(examId, examName, examUnit);
       await updateExamsResultsOnDataBase(examId, filteredExamsResults);
       
       setAlert({
@@ -266,17 +271,32 @@ export default function ExamReaderExamForm() {
               <span>Lista de Exames</span>
             </Link>
 
-            <section className={ styles["editor__form-section"] }>
-              <label htmlFor="examName">Nome do Exame</label>
-              <input 
-                type="text"
-                name="examName"
-                id="examName" 
-                className={styles["editor__form-input"]}
-                value={ examName } 
-                onChange={ handleExamNameChange } 
-                disabled={ !edit }  
-              />
+            <section className={ `${styles["editor__form-section-examData"]} ${styles["editor__form-section"]}` }>
+              <div className={ styles["editor__form-subsection"] }>
+                <label htmlFor="examName">Nome do Exame</label>
+                <input 
+                  type="text"
+                  name="examName"
+                  id="examName" 
+                  className={styles["editor__form-input"]}
+                  value={ examName } 
+                  onChange={ handleExamNameChange } 
+                  disabled={ !edit }  
+                />
+              </div>
+
+              <div className={ styles["editor__form-subsection"] }>
+                <label htmlFor="examUnit">Unidade</label>
+                <input 
+                  type="text"
+                  name="examUnit"
+                  id="examUnit" 
+                  className={styles["editor__form-input"]}
+                  value={ examUnit } 
+                  onChange={ handleExamUnitChange } 
+                  disabled={ !edit }  
+                />
+              </div>
             </section>
 
             <section className={styles["editor__form-section"]}>
