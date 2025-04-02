@@ -14,9 +14,9 @@ export default function AddExamModal() {
   const [ openAddExamModal, setOpenaddExamModal ] = useAtom(ExamReaderAddExamAtom);
   const [ loading, setLoading ] = useState(false);
   const [ examName, setExamName ] = useState('');
+  const [ examUnit, setExamUnit ] = useState('');
   const [ showHelperText, setShowHelperText ] = useState({
-    examName: false,
-    examsResults: false
+    examName: false
   });
   const [ alert, setAlert ] = useState({
     message: 'teste',
@@ -44,6 +44,10 @@ export default function AddExamModal() {
     });
   }
 
+  function handleExamUnitChange(e) {
+    setExamUnit(e.target.value);
+  }
+
   async function handleFormSubmit(e) {
     e.preventDefault();
     
@@ -66,7 +70,7 @@ export default function AddExamModal() {
     try {
       let exam = await axios.post(
         `${import.meta.env.VITE_LOCALHOST_API_BASE_URL}/exams/`, 
-        { nome: examName }
+        { nome: examName, unidade: examUnit }
       );
       exam = exam.data;
 
@@ -129,6 +133,11 @@ export default function AddExamModal() {
               null :
               <p className={ styles["modal__form-error"]} >O nome do exame deve estar preenchido</p>
             }
+          </section>
+
+          <section className={styles["modal__form-section"]}>
+            <label htmlFor="examName" className={styles["modal__form-label"]}>Unidade do exame:</label>
+            <input type="text" id="examName" className={styles["modal__form-input"]} onChange={ handleExamUnitChange }/>
           </section>
             
           <button type="submit" className={styles["modal__form-submit"]}>
