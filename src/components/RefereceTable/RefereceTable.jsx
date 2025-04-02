@@ -1,19 +1,5 @@
 import styles from './styles.module.css';
-import { returnExamResultsIntervals } from '../../utils';
 import { useEffect, useState } from 'react';
-
-function formatsResultWithOnlyTwoResults(array) {
-  const lastPos = array.length - 1;
-  array.splice(1, 0, {
-    id: null,
-    exame_id: array[lastPos].exame_id,
-    valor: array[lastPos].valor,
-    resultado: 'Ideal',
-    sexo: array[lastPos].sexo
-  });
-
-  return array;
-}
 
 function returnGenderProperName(gender) {
   if (gender === 'm') {
@@ -26,7 +12,7 @@ function returnGenderProperName(gender) {
   return 'todos';
 }
 
-export default function RefereceTable({ results, tableClassName, tableRowClassName, tableDataClassName }) {
+export default function RefereceTable({ results, unit, tableClassName, tableRowClassName, tableDataClassName }) {
   const [ genders, setGenders ] = useState([]);
   const [ resultsByGender, setResultsByGender ] = useState([]);
   const [ genderStartIndex, setGenderStartIndex ] = useState({});
@@ -49,12 +35,6 @@ export default function RefereceTable({ results, tableClassName, tableRowClassNa
         resultados_grouped_by_gender[resultado.sexo] = [resultado]; 
       }
     });
-
-    // Object.keys(resultados_grouped_by_gender).forEach((gender) => {
-    //   if (resultados_grouped_by_gender[gender].length === 2) {
-    //     resultados_grouped_by_gender[gender] = formatsResultWithOnlyTwoResults([...resultados_grouped_by_gender[gender]]);
-    //   }
-    // });
 
     Object.values(resultados_grouped_by_gender).forEach((results) => {
       results.forEach((result, index) => {
@@ -97,8 +77,7 @@ export default function RefereceTable({ results, tableClassName, tableRowClassNa
                   : null
                 }
                 <td className={ `${styles["table-data-value"]}  ${ tableDataClassName || styles["default__table-data"] }` }>
-                  { result.valor }
-                  {/* { returnExamResultsIntervals(resultsByGender[gender], index) } */}
+                  { result.valor } { unit }
                 </td>
                 <td className={ `${styles["table-data-result"]}  ${ tableDataClassName || styles["default__table-data"] }` }>{ result.resultado }</td>
               </tr>

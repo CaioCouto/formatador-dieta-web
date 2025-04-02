@@ -5,7 +5,7 @@ import { Alert, ConfirmationModal, Loader, RefereceTable } from "../../../../com
 
 import styles from './styles.module.css';
 import { FaTrash } from "react-icons/fa6";
-import { returnExamResultsIntervals, returnIconSizeByWindowSize } from "../../../../utils";
+import { returnIconSizeByWindowSize } from "../../../../utils";
 import axios from "axios";
 import { FaRegEdit } from "react-icons/fa";
 import { Link } from "react-router-dom";
@@ -69,14 +69,6 @@ export default function ExamList() {
 
   function handleOpenAddExamModal(e) {
     setOpenaddExamModal(true);
-  }
-
-  async function openDeleteConfirmationModal(examId) {
-    setExamIdToBeDeleted(examId);
-    setConfirmationModal({
-      show: true,
-      message: 'Tem certeza que deseja deletar este exame?',
-    });
   }
 
   async function deleteExam() {
@@ -216,8 +208,9 @@ function List({ exams, setExamIdToBeDeleted }) {
                 <p>Este exame ainda não possui resultados cadastrados.</p>
               </div> :
               <div className={ styles["examlist__exam-results"] }>
-                <RefereceTable 
+                <RefereceTable
                   results={ exam.resultados }
+                  unit={ exam.unidade }
                   tableClassName={ styles["examlist__exam-table"] }
                   tableRowClassName={ styles["examlist__exam-table-row"]}
                   tableDataClassName={ styles["examlist__exam-table-data"]}
