@@ -30,16 +30,16 @@ export default function ExamList() {
       allExams = allExams.data.exams.map(exam => {
         const resultados_grouped_by_gender = {};
         let resultados = exam.resultados;
-        if (resultados.length === 2) {
-          const lastPos = resultados.length - 1;
-          resultados.splice(1, 0, {
-            id: null,
-            exame_id: resultados[lastPos].exame_id,
-            valor: resultados[lastPos].valor,
-            resultado: 'Ideal',
-            sexo: resultados[lastPos].sexo
-          });
-        }
+        // if (resultados.length === 2) {
+        //   const lastPos = resultados.length - 1;
+        //   resultados.splice(1, 0, {
+        //     id: null,
+        //     exame_id: resultados[lastPos].exame_id,
+        //     valor: resultados[lastPos].valor,
+        //     resultado: 'Ideal',
+        //     sexo: resultados[lastPos].sexo
+        //   });
+        // }
 
         resultados.forEach(resultado => {
           if(resultados_grouped_by_gender[resultado.sexo]) {
