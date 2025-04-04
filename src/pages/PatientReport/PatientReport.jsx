@@ -160,7 +160,7 @@ export default function PatientReport() {
           <Splash /> :
           <>
             <section className={ styles["patient__info"] }>
-              <Link to="/exams/list" className={ styles["patient__info-back"] }>
+              <Link to="/exams/list" state={{ contentTobeShown:'Pacientes' }} className={ styles["patient__info-back"] }>
                 <FaArrowLeft size={ returnIconSizeByWindowSize() } />
                 <span>Lista de Exames</span>
               </Link>
