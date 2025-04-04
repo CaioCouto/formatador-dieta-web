@@ -5,7 +5,7 @@ import { Alert, ConfirmationModal, Loader } from "../../../../components";
 
 import styles from './styles.module.css';
 import { FaMagnifyingGlass, FaTrash } from "react-icons/fa6";
-import { returnExamResultsIntervals, returnIconSizeByWindowSize, searchTermOnHTMLElement } from "../../../../utils";
+import { returnIconSizeByWindowSize, searchTermOnHTMLElement } from "../../../../utils";
 import axios from "axios";
 import { FaRegEdit } from "react-icons/fa";
 import { Link } from "react-router-dom";
@@ -31,20 +31,6 @@ export default function PatientList() {
     try {
       setLoading(true);
       let allPatients = await axios.get(`${import.meta.env.VITE_LOCALHOST_API_BASE_URL}/patients/`);
-      console.log(allPatients.data.patients);
-      // allPatients = allPatients.data.exams.map(exam => {
-      //   let resultados = exam.resultados;
-      //   if (resultados.length === 2) {
-      //     const lastPos = resultados.length - 1;
-      //     resultados.splice(1, 0, {
-      //       id: null,
-      //       exame_id: resultados[lastPos].exame_id,
-      //       valor: resultados[lastPos].valor,
-      //       resultado: 'Ideal'
-      //     });
-      //   }
-      //   return exam;
-      // });
       
       setPatients(allPatients.data.patients);
     } catch (error) {
@@ -211,7 +197,6 @@ function PatientsList({ allPatients, populatePatientNameParagraphsRefs }) {
             <div className={ styles["examlist__exam-info"] }>
               <div className={ styles["examlist__exam-info-text"] }>
                 <p className={ `patientName ${styles["examlist__exam-name"]}` }>{ exam.nome }</p>
-                {/* <p className={ styles["examlist__exam-description"] }> ({ exam.resultados.length } resultados)</p>   */}
               </div>
   
               <div className={ styles["examlist__exam-options"] }>
@@ -228,45 +213,10 @@ function PatientsList({ allPatients, populatePatientNameParagraphsRefs }) {
                 />
               </div>
             </div>
-  
-            {/* {
-              exam.resultados.length === 0 ?
-              <div className={ styles["examlist__exam-results"] }>
-                <p>Este exame ainda não possui resultados cadastrados.</p>
-              </div> :
-              <ReferenceTable results={ exam.resultados } />
-            } */}
           </div>
         ))
       }
       
     </>
-  )
-}
-
-function ReferenceTable({ results }) {
-  return (
-    <div className={ styles["examlist__exam-results"] }>
-      <table className={ styles["examlist__exam-table"] }>
-        <thead>
-          <tr>
-            <th>Valor</th>
-            <th>Classificação</th>
-          </tr>
-        </thead>
-        <tbody>
-          {
-            results.map((result, index) => (
-              <tr key={ index } className={ styles["examlist__exam-table-row"] }>
-                <td className={ styles["examlist__exam-table-data"] }>
-                  { returnExamResultsIntervals(results, index) }
-                </td>
-                <td>{ result.resultado }</td>
-              </tr>
-            ))
-          }
-        </tbody>
-      </table>
-    </div>
   )
 }
