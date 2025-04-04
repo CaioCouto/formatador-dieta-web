@@ -8,7 +8,7 @@ import { FaMagnifyingGlass, FaTrash } from "react-icons/fa6";
 import { returnIconSizeByWindowSize, searchTermOnHTMLElement } from "../../../../utils";
 import axios from "axios";
 import { FaRegEdit } from "react-icons/fa";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import AddPatientModal from "../AddPatientModal";
 
 export default function PatientList() {
@@ -20,7 +20,7 @@ export default function PatientList() {
 
   const [ loading, setLoading ] = useState(false);
   const [ patients, setPatients ] = useState([]);
-  const [ examIdToBeDeleted, setExamIdToBeDeleted ] = useState(null);
+  const [ patientIdToBeDeleted, setPatientIdToBeDeleted ] = useState(null);
   const [ alert, setAlert ] = useState({
     message: 'test',
     type: 'success',
@@ -74,15 +74,7 @@ export default function PatientList() {
     }
   }
 
-  async function openDeleteConfirmationModal(examId) {
-    setExamIdToBeDeleted(examId);
-    setConfirmationModal({
-      show: true,
-      message: 'Tem certeza que deseja deletar este exame?',
-    });
-  }
-
-  async function deleteExam() {
+  async function deletePatient() {
     try {
       setLoading(true);
       setConfirmationModal({
@@ -91,18 +83,18 @@ export default function PatientList() {
       });
 
       setAlert({
-        message: 'Deletando exame...',
+        message: 'Deletando paciente...',
         type: 'info',
         show: true
       });
 
-      await axios.delete(`${import.meta.env.VITE_LOCALHOST_API_BASE_URL}/exams/${examIdToBeDeleted}`);
+      await axios.delete(`${import.meta.env.VITE_LOCALHOST_API_BASE_URL}/patients/${patientIdToBeDeleted}`);
       
-      const newExams = exams.filter((exam, i) => exam.id !== examIdToBeDeleted);
-      setExams(newExams);
+      const newPatients = patients.filter((patient, i) => patient.id !== patientIdToBeDeleted);
+      setPatients(newPatients);
 
       setAlert({
-        message: 'Exame Deletado com sucesso!',
+        message: 'Paciente deletado com sucesso!',
         type: 'success',
         show: true
       });
@@ -139,10 +131,15 @@ export default function PatientList() {
   return (
     <section className={ styles["examlist"] }>
       <ConfirmationModal
-        message={ confirmationModal.message }
-        onConfirm={ deleteExam }
+        onConfirm={ deletePatient }
       />
       <AddPatientModal /> 
+
+      <Alert 
+        message={ alert.message }
+        type={ alert.type }
+        show={ alert.show }
+      />
 
 
       <div  className={ styles["examlist__header"] }>
@@ -165,19 +162,14 @@ export default function PatientList() {
         />
       </div>
 
-      <Alert 
-        message={ alert.message }
-        type={ alert.type }
-        show={ alert.show }
-      />
-
       <div className={ styles["examlist__exams-wrapper"] }>
         {
           loading ?
           <Loader /> :
           <PatientsList 
             allPatients={ patients } 
-            populatePatientNameParagraphsRefs={ populatePatientNameParagraphsRefs }  
+            populatePatientNameParagraphsRefs={ populatePatientNameParagraphsRefs } 
+            setPatientIdToBeDeleted={ setPatientIdToBeDeleted } 
           />
         }
       </div>
@@ -185,31 +177,47 @@ export default function PatientList() {
   );
 }
 
-function PatientsList({ allPatients, populatePatientNameParagraphsRefs }) {
+function PatientsList({ allPatients, populatePatientNameParagraphsRefs, setPatientIdToBeDeleted }) {
+  const [ _, setConfirmationModal ] = useAtom(ConfirmationModalAtom);
+  const navigate = useNavigate();
+
+  function navigateToPatientPage(patientId) {
+    navigate(`/patients/${patientId}`, { replace: true });
+  }
+
+  function openDeleteConfirmationModal(examId) {
+    setPatientIdToBeDeleted(examId);
+    setConfirmationModal({
+      show: true,
+      message: 'Tem certeza que deseja deletar este Paciente?',
+    });
+  }
+
   return (
     <>
       {
         allPatients.length === 0 ?
         <p>Nenhum Paciente Cadastrado</p>
         :
-        allPatients.map((exam, index) => (
-          <div ref={ populatePatientNameParagraphsRefs } className={ styles["examlist__exam"] } key={ index }>
+        allPatients.map((patient, index) => (
+          <div 
+            ref={ populatePatientNameParagraphsRefs } 
+            className={ styles["examlist__exam"] } 
+            key={ index }
+          >
             <div className={ styles["examlist__exam-info"] }>
-              <div className={ styles["examlist__exam-info-text"] }>
-                <p className={ `patientName ${styles["examlist__exam-name"]}` }>{ exam.nome }</p>
+              <div 
+                className={ styles["examlist__exam-info-text"] }
+                onClick={ () => navigateToPatientPage(patient.id) }
+              >
+                <p className={ `patientName ${styles["examlist__exam-name"]}` }>{ patient.nome }</p>
               </div>
   
               <div className={ styles["examlist__exam-options"] }>
-                <Link to={ `/patients/${exam.id}` }>
-                  <FaRegEdit 
-                    size={ returnIconSizeByWindowSize() }
-                    className={ styles["examlist__edit-icon"] }
-                  />
-                </Link>
                 <FaTrash 
                   size={ returnIconSizeByWindowSize() }
                   className={ styles["examlist__delete-icon"] }
-                  onClick={(e) => openDeleteConfirmationModal(exam.id) }
+                  onClick={(e) => openDeleteConfirmationModal(patient.id) }
                 />
               </div>
             </div>
