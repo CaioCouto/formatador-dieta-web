@@ -39,6 +39,11 @@
   align-items: center;
   gap: 10px;
 }
+
+.patient__info-options--no-desktop {
+  display: none;
+}
+
 .patient__info-options-edit,
 .patient__info-options-delete {
   color: var(--white);
@@ -64,6 +69,19 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+}
+
+.patient__results-groupby {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.patient__results-groupby-select {
+  color: var(--black);
+  border: 1px solid var(--black);
+  border-radius: var(--borderRadius10);
+  padding: 5px;
 }
 
 .patient__results-wrapper {
@@ -127,6 +145,14 @@
 }
 
 @media (max-width: 767px) {
+  .patient__info-options--desktop {
+    display: none;
+  }
+
+  .patient__info-options--no-desktop {
+    display: flex;
+  }
+
   .patient__results-add-button {
     width: fit-content;
   }
@@ -141,7 +167,26 @@
 }
 
 @media (max-width: 479px) {
+  .patient__info-top {
+    flex-direction: column;
+    gap: 20px;
+    align-items: flex-start;
+  }
+
+  .patient__info-options {
+    width: 100%;
+  }
+
   .patient__results-add-button {
+    font-size: 14px;
+  }
+
+  .patient__results-title {
+    font-size: 16px;
+  }
+
+  .patient__result-exam,
+  .patient__result-value {
     font-size: 14px;
   }
 }

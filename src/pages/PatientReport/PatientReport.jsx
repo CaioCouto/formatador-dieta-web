@@ -86,31 +86,13 @@ export default function PatientReport() {
   async function getPatientByRouteId() {
     let responsePaciente = await axios.get(`${import.meta.env.VITE_LOCALHOST_API_BASE_URL}/patients/${patientId}`);
     responsePaciente = responsePaciente.data;
-    const formatedPacienteResults = {};
-    responsePaciente.resultados.forEach(result => {
-      const [ exam ] = responsePaciente.exames.filter(exame => exame.id === result.exame_id);
-      const examDate = result.data_exame.split('T')[0];
-      const formatedResult = {
-        nome_exame: exam.nome,
-        unidade_exame: exam.unidade,
-        data_exame: result.data_exame.split('T')[0],
-        valores_referencia: exam.resultados.filter(r => r.sexo === 'ambos' || r.sexo === 'm'),
-        resultado: result.resultado
-      };
-
-      if(formatedPacienteResults[examDate]) {
-        formatedPacienteResults[examDate].push(formatedResult);
-      }
-      else {
-        formatedPacienteResults[examDate] = [formatedResult];
-      }
-    });
     
     setPatient({
       nome: responsePaciente.nome,
       sexo: responsePaciente.sexo,
       data_nascimento: responsePaciente.data_nascimento.split('T')[0],
-      resultados: formatedPacienteResults
+      resultados: responsePaciente.resultados,
+      exames: responsePaciente.exames,
     });
   }
 
@@ -168,7 +150,7 @@ export default function PatientReport() {
               <div className={ styles["patient__info-top"] }>
                 <h1>{ patient.nome }</h1>
                 
-                <div className={ styles["patient__info-options"] }>
+                <div className={ `${styles["patient__info-options"]} ${styles["patient__info-options--desktop"]}` }>
                   <button className={ styles["patient__info-options-edit"] } onClick={ handleEditbuttonClick}>
                     Editar
                     <FaRegEdit size={ returnIconSizeByWindowSize() } />
@@ -196,10 +178,25 @@ export default function PatientReport() {
                   ({ returnPatientAge(patient.data_nascimento) } anos)
                 </strong>
               </p>
+
+              <div className={ `${styles["patient__info-options"]} ${styles["patient__info-options--no-desktop"]}` }>
+                <button className={ styles["patient__info-options-edit"] } onClick={ handleEditbuttonClick}>
+                  Editar
+                  <FaRegEdit size={ returnIconSizeByWindowSize() } />
+                </button>
+
+                <button
+                  className={ styles["patient__info-options-delete"] }
+                  onClick={ handleDeletebuttonClick}  
+                >
+                  Excluir
+                  <FaTrash size={ returnIconSizeByWindowSize() } />
+                </button>
+              </div>
             </section>
 
             <PatientResults 
-              resultados={ patient.resultados } 
+              patient={ patient } 
               setExamNameTobeReferenced={ setExamNameTobeReferenced }
               setResultsTobeReferenced={ setResultsTobeReferenced }
             />
@@ -218,18 +215,66 @@ function Splash() {
   );
 }
 
-function PatientResults({ resultados, setExamNameTobeReferenced, setResultsTobeReferenced }) {
-  const [ addPatientResultModal, setAddPatientResultModal ] = useAtom(AddPatientResultModalAtom);
-  const [ _, setShowExamResultsRefereceTableModal ] = useAtom(ExamResultsRefereceTableModalAtom);
+function PatientResults({ patient, setExamNameTobeReferenced, setResultsTobeReferenced }) {
+  const [ _, setAddPatientResultModal ] = useAtom(AddPatientResultModalAtom);
+  const [ __, setShowExamResultsRefereceTableModal ] = useAtom(ExamResultsRefereceTableModalAtom);
+  const [ groupedResults, setGroupedResults ] = useState({});
+  const [ groupByCategory, setGroupByCategory ] = useState('data');
 
   const resultsWrapperRefs = useRef([]);
 
-  function pushResultsWrapperRef(el) {
-    resultsWrapperRefs.current.push(el);
+  function handleGroupByValueChange(e) {
+    setGroupByCategory(e.target.value);
   }
 
-  function handleAddNewPatientResultClick() {
-    setAddPatientResultModal(true);
+  function groupResultsByDate() {    
+    const formatedPacienteResults = {};
+    patient.resultados.forEach(result => {
+      const [ exam ] = patient.exames.filter(exame => exame.id === result.exame_id);
+      const examDate = result.data_exame.split('T')[0];
+      const formatedResult = {
+        nome_exame: exam.nome,
+        unidade_exame: exam.unidade,
+        data_exame: result.data_exame.split('T')[0],
+        valores_referencia: exam.resultados.filter(r => r.sexo === 'ambos' || r.sexo === 'm'),
+        resultado: result.resultado
+      };
+
+      if(formatedPacienteResults[examDate]) {
+        formatedPacienteResults[examDate].push(formatedResult);
+      }
+      else {
+        formatedPacienteResults[examDate] = [formatedResult];
+      }
+    });
+    setGroupedResults(formatedPacienteResults);
+  }
+  
+  function groupResultsByExam() {
+    const pacienteResultsGroupedbyExam = {};
+    patient.resultados.forEach(result => {
+      const [ exam ] = patient.exames.filter(exame => exame.id === result.exame_id);
+      const examName = exam.nome;
+      const formatedResult = {
+        nome_exame: examName,
+        unidade_exame: exam.unidade,
+        data_exame: result.data_exame.split('T')[0],
+        valores_referencia: exam.resultados.filter(r => r.sexo === 'ambos' || r.sexo === 'm'),
+        resultado: result.resultado
+      };
+
+      if(pacienteResultsGroupedbyExam[examName]) {
+        pacienteResultsGroupedbyExam[examName].push(formatedResult);
+      }
+      else {
+        pacienteResultsGroupedbyExam[examName] = [formatedResult];
+      }
+      setGroupedResults(pacienteResultsGroupedbyExam);
+    });
+  }
+
+  function pushResultsWrapperRef(el) {
+    resultsWrapperRefs.current.push(el);
   }
 
   function handleExamClick(result) {
@@ -255,6 +300,19 @@ function PatientResults({ resultados, setExamNameTobeReferenced, setResultsTobeR
     parentElementClassList.add(parentElementOpenClass);
 
   }
+
+  function handleAddNewPatientResultClick() {
+    setAddPatientResultModal(true);
+  }
+
+  useEffect(() => {
+    if(groupByCategory === 'data') {
+      groupResultsByDate();
+    }
+    else if(groupByCategory === 'exame') {
+      groupResultsByExam();
+    }
+  }, [groupByCategory])
   
   return (
     <section className={ styles["patient__results-list"] }>
@@ -266,26 +324,40 @@ function PatientResults({ resultados, setExamNameTobeReferenced, setResultsTobeR
           Adicionar Resultado
         </button>
       </div>
+
+      <div className={ styles["patient__results-groupby"] }>
+        <label htmlFor="groupBy">Agrupar Por:</label>
+        <select 
+          id="groupBy"
+          onChange={ handleGroupByValueChange }
+          value={ groupByCategory }
+          className={ styles["patient__results-groupby-select"] }
+        >
+          <option value="data">Data</option>
+          <option value="exame">Exame</option>
+        </select>
+      </div>
+
       {
-        Object.keys(resultados).length === 0 ?
+        Object.keys(groupedResults).length === 0 ?
         <p>Nenhum resultado cadastrado</p> :
-        Object.keys(resultados).map((key, index) => (
+        Object.keys(groupedResults).map((key, index) => (
           <div 
             key={ index } 
             ref={ pushResultsWrapperRef }
             className={ `${styles["patient__results-wrapper"]} ${index === 0 ? styles["patient__results-wrapper--open"] : ''}` } 
           >
             <div className={ styles["patient__results-header"] } onClick={ handleOpenAccordion }>
-              <h3>{ returnFormatedDate(key) }</h3>
+              <h3 className={ styles["patient__results-title"] }>{ groupByCategory === 'data' ? returnFormatedDate(key) : key }</h3>
 
               <FaChevronDown size={ returnIconSizeByWindowSize() }/>
             </div>
 
             <div className={ styles["patient__results"] }>
               {
-                resultados[key].map((result, index) => (
+                groupedResults[key].map((result, index) => (
                   <button key={ index } className={ styles["patient__result"] } onClick={ () => handleExamClick(result)}>
-                    <p className={ styles["patient__result-exam"] }>{ result.nome_exame }</p>
+                    <p className={ styles["patient__result-exam"] }>{ groupByCategory === 'data' ? result.nome_exame : returnFormatedDate(result.data_exame) }</p>
                     
                     <div className={ styles["patient__result-values"] }>
                       <p className={ styles["patient__result-value"] }>
@@ -300,7 +372,25 @@ function PatientResults({ resultados, setExamNameTobeReferenced, setResultsTobeR
           </div>
         ))
       }
+
+      {/* {
+        (() => {
+          switch(groupByCategory) {
+            case 'data':
+              return <PatientResultsGroupedbyDate
+                resultados={ groupedResults } 
+                setExamNameTobeReferenced={ setExamNameTobeReferenced }
+                setResultsTobeReferenced={ setResultsTobeReferenced }
+              />
+            case 'exame':
+              return <PatientResultsGroupedbyExam
+                resultados={ groupedResults } 
+                setExamNameTobeReferenced={ setExamNameTobeReferenced }
+                setResultsTobeReferenced={ setResultsTobeReferenced }
+              />
+          }
+      })()
+      } */}
     </section>
   );
 }
-
