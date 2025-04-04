@@ -1,11 +1,11 @@
 import { useAtom } from "jotai";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ConfirmationModalAtom, ExamReaderAddExamAtom } from "../../../../jotai";
 import { Alert, ConfirmationModal, Loader, RefereceTable } from "../../../../components";
 
 import styles from './styles.module.css';
-import { FaTrash } from "react-icons/fa6";
-import { returnIconSizeByWindowSize } from "../../../../utils";
+import { FaMagnifyingGlass, FaTrash } from "react-icons/fa6";
+import { returnIconSizeByWindowSize, searchTermOnHTMLElement } from "../../../../utils";
 import axios from "axios";
 import { FaRegEdit } from "react-icons/fa";
 import { Link } from "react-router-dom";
@@ -14,6 +14,10 @@ import AddExamModal from "../AddExamModal/AddExamModal";
 export default function ExamList() {
   const [ confirmationModal, setConfirmationModal ] = useAtom(ConfirmationModalAtom);
   const [ openAddExamModal, setOpenaddExamModal ] = useAtom(ExamReaderAddExamAtom);
+  
+  const searchBoxRef = useRef(null);
+  const examNameParagraphs = useRef([]);
+
   const [ loading, setLoading ] = useState(false);
   const [ exams, setExams ] = useState([]);
   const [ examIdToBeDeleted, setExamIdToBeDeleted ] = useState(null);
@@ -30,16 +34,6 @@ export default function ExamList() {
       allExams = allExams.data.exams.map(exam => {
         const resultados_grouped_by_gender = {};
         let resultados = exam.resultados;
-        // if (resultados.length === 2) {
-        //   const lastPos = resultados.length - 1;
-        //   resultados.splice(1, 0, {
-        //     id: null,
-        //     exame_id: resultados[lastPos].exame_id,
-        //     valor: resultados[lastPos].valor,
-        //     resultado: 'Ideal',
-        //     sexo: resultados[lastPos].sexo
-        //   });
-        // }
 
         resultados.forEach(resultado => {
           if(resultados_grouped_by_gender[resultado.sexo]) {
@@ -69,6 +63,30 @@ export default function ExamList() {
 
   function handleOpenAddExamModal(e) {
     setOpenaddExamModal(true);
+  }
+
+  function populateExamNameParagraphsRefs(el) {
+    examNameParagraphs.current.push(el)
+  }
+
+  function handleSearchTermChange(e) {
+    examNameParagraphs.current.forEach(el => {
+      if (!el) { return; }
+      const termExists = searchTermOnHTMLElement(e.target.value, el, 'examName');
+      el.style.display = termExists ? 'block' : 'none';
+    });
+  }
+
+  function handleOpenSeachBox() {
+    const searchBoxClasslist = searchBoxRef.current.classList;
+    const openClass = styles['examlist__searchbox--open'];
+
+    if(searchBoxClasslist.contains(openClass)) {
+      searchBoxClasslist.remove(openClass);
+    }
+    else {
+      searchBoxClasslist.add(openClass);
+    }
   }
 
   async function deleteExam() {
@@ -138,8 +156,20 @@ export default function ExamList() {
         <h2 className={ styles["examlist__title"] }>Exames</h2>
 
         <div className={ styles["examlist__options"] }>
+          <button className={ styles["examlist__options-search"] } onClick={ handleOpenSeachBox }>
+            <FaMagnifyingGlass size={ returnIconSizeByWindowSize() } />
+          </button>
           <button onClick={ handleOpenAddExamModal }>Adicionar Exame</button>
         </div>
+      </div>
+
+      <div ref={ searchBoxRef } className={ styles["examlist__searchbox"] }>
+        <input 
+          type="text" 
+          placeholder="Nome do Exame..." 
+          className={ styles["examlist__searchbox-input"] } 
+          onChange={ handleSearchTermChange } 
+        />
       </div>
 
       <Alert 
@@ -155,6 +185,7 @@ export default function ExamList() {
           <List 
             exams={ exams } 
             setExamIdToBeDeleted={ setExamIdToBeDeleted }
+            populateExamNameParagraphsRefs={ populateExamNameParagraphsRefs }
           />
         }
       </div>
@@ -162,7 +193,7 @@ export default function ExamList() {
   );
 }
 
-function List({ exams, setExamIdToBeDeleted }) {
+function List({ exams, setExamIdToBeDeleted, populateExamNameParagraphsRefs }) {
   const [ confirmationModal, setConfirmationModal ] = useAtom(ConfirmationModalAtom);
   
 
@@ -180,10 +211,10 @@ function List({ exams, setExamIdToBeDeleted }) {
         exams.length === 0 ?
         <p className={ styles["examlist__no-exams"] }>Nenhum exame cadastrado</p> :
         exams.map((exam, index) => (
-          <div className={ styles["examlist__exam"] } key={ index }>
+          <div ref={ populateExamNameParagraphsRefs } className={ styles["examlist__exam"] } key={ index }>
             <div className={ styles["examlist__exam-info"] }>
               <div className={ styles["examlist__exam-info-text"] }>
-                <p className={ styles["examlist__exam-name"] }>{ exam.nome }</p>
+                <p className={ `examName ${styles["examlist__exam-name"]}` }>{ exam.nome }</p>
                 <p className={ styles["examlist__exam-description"] }> ({ exam.resultados.length } resultados)</p>
               </div>
 
