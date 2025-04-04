@@ -1,6 +1,7 @@
 import styles from "./styles.module.css";
 import { AddExamModal, ExamList, PatientList } from "./ExamReaderComponents";
 import { useState } from "react";
+import { useLocation } from "react-router-dom";
 
 const optionButtons = [
   { 
@@ -13,8 +14,26 @@ const optionButtons = [
   }
 ]
 
+function returnContentToBeShown(pageLocation) {
+  let result = optionButtons[0].label;
+
+  if (pageLocation.state) {
+    optionButtons.forEach(op => {
+      op.active = false;
+      if(op.label === pageLocation.state.contentTobeShown) {
+        result = op.label;
+        op.active = true;
+      }
+    });
+  }
+
+  return result;
+}
+
+
 export default function ExamReader() {
-  const [ contentToBeShown, setContentToBeShown ] = useState(optionButtons[0].label) 
+  const location = useLocation();
+  const [ contentToBeShown, setContentToBeShown ] = useState(returnContentToBeShown(location)) 
   function handleAddExamClick(index) {    
     document.querySelectorAll('.examreader__option').forEach((option, optIndex) => {
       const optionClasslisst = option.classList;
@@ -38,7 +57,7 @@ export default function ExamReader() {
               key={ index } 
               onClick={ () => handleAddExamClick(index) } 
               data-label={ option.label }
-              className={ `examreader__option ${index === 0 ? styles["examreader__option--active"] : ''}` }
+              className={ `examreader__option ${option.active ? styles["examreader__option--active"] : ''}` }
             >
               { option.label }
             </button>
