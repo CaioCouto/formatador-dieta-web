@@ -3,6 +3,43 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 20px;
+  gap: 10px;
+}
+
+.examlist__options {
+  display: flex;
+  gap: 10px;
+}
+
+.examlist__options-search {
+  width: fit-content;
+}
+
+.examlist__options-search::before {
+  content: 'Buscar';
+}
+
+.examlist__searchbox {
+  display: flex;
+  max-height: 0;
+  overflow: hidden;
+  transition: 250ms ease-in-out;
+}
+
+.examlist__searchbox--open {
+  max-height: 100px;
+  transition: 250ms ease-in-out;
+  margin-bottom: 20px;
+}
+
+.examlist__searchbox-input {
+  box-sizing: border-box;
+  display: inline-block;
+  width: 100%;
+  padding: 7px;
+  border-radius: var(--borderRadius10);
+  border: 1px solid var(--black);
+  outline: none;
 }
 
 .examlist__exams-wrapper {
@@ -93,7 +130,11 @@
   }
 }
 
-@media (max-width: 767px) {
+@media (max-width: 479px) {
+  .examlist__options-search::before {
+    display: none;
+  }
+
   .examlist__exam-name {
     font-size: 20px;
   }
