@@ -367,7 +367,7 @@ function PatientResults({ patient, setExamNameTobeReferenced, setResultsTobeRefe
                     <div className={ styles["patient__result-values"] }>
                       <p className={ styles["patient__result-value"] }>
                         { result.resultado }{ result.unidade_exame } {' '}
-                        {/* <span>({ returnPatientResultClassification(result) })</span> */}
+                        <span>({ result.classification })</span>
                       </p>
                     </div>
                   </button>
