@@ -1,14 +1,13 @@
 import styles from "./styles.module.css";
 import axios from "axios";
 import { useEffect, useRef, useState } from "react";
-import { FaArrowLeft, FaCheck, FaChevronDown, FaCirclePlus, FaPencil, FaTrash, FaXmark } from "react-icons/fa6";
+import { FaArrowLeft, FaChevronDown, FaCirclePlus, FaTrash } from "react-icons/fa6";
 import { Alert, ConfirmationModal, ExamResultsRefereceTableModal, Loader } from "../../components";
 import { returnIconSizeByWindowSize } from "../../utils";
 import { useAtom } from "jotai";
-import { AddPatientResultModalAtom, ConfirmationModalAtom, ExamResultsRefereceTableModalAtom, IconSizeAtom } from "../../jotai";
-import { Link, Navigate, useNavigate, useParams } from "react-router-dom";
+import { AddPatientResultModalAtom, ConfirmationModalAtom, ExamResultsRefereceTableModalAtom } from "../../jotai";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { FaRegEdit } from "react-icons/fa";
-import { EmptyExamNameError, EmptyExamResultsError } from "../../classes";
 import { AddPatientResultModal } from "./PatientReportComponents";
 
 
@@ -35,7 +34,7 @@ function returnPatientAge(birthdate) {
   return birthdayHasPassed ? age : age - 1;
 }
 
-function returnPatientResultClassification(result) {
+function returnPatientResultClassification(result, targetElementId) {
   let classification = 'alterado';
   const valor = result.resultado;
   const valoresReferencia = result.valores_referencia;
@@ -63,6 +62,11 @@ function returnPatientResultClassification(result) {
     }
   });
 
+  if(classification.toLowerCase() !== 'ideal') {
+    const targetElement = document.querySelector(`#${targetElementId}`);
+    targetElement ? targetElement.classList.add(styles["patient__result--hightlighted"]) : null;
+  }
+
   return classification;
 }
 
@@ -71,8 +75,7 @@ export default function PatientReport() {
   const navigate = useNavigate();
   const [ addPatientResultModal, setAddPatientResultModal ] = useAtom(AddPatientResultModalAtom);
   const [ confirmationModal, setConfirmationModal ] = useAtom(ConfirmationModalAtom);
-  const [ showExamResultsRefereceTableModal, setShowExamResultsRefereceTableModal ] = useAtom(ExamResultsRefereceTableModalAtom);
-  const [ loading, setLoading ] = useState(false);
+  const [ loading, setLoading ] = useState(true);
   const [ resultsTobeReferenced, setResultsTobeReferenced ] = useState(null);
   const [ examNameTobeReferenced, setExamNameTobeReferenced ] = useState(null);
   const [ alert, setAlert ] = useState({
@@ -84,6 +87,7 @@ export default function PatientReport() {
   const [ patient, setPatient ] = useState(null); 
 
   async function getPatientByRouteId() {
+    setLoading(true);
     let responsePaciente = await axios.get(`${import.meta.env.VITE_LOCALHOST_API_BASE_URL}/patients/${patientId}`);
     responsePaciente = responsePaciente.data;
     
@@ -94,6 +98,8 @@ export default function PatientReport() {
       resultados: responsePaciente.resultados,
       exames: responsePaciente.exames,
     });
+    
+    setLoading(false);
   }
 
   function handleEditbuttonClick() {
@@ -138,7 +144,7 @@ export default function PatientReport() {
       }
 
       {
-        !patient ? 
+        loading ? 
           <Splash /> :
           <>
             <section className={ styles["patient__info"] }>
@@ -320,7 +326,7 @@ function PatientResults({ patient, setExamNameTobeReferenced, setResultsTobeRefe
         <h2>Resultados</h2>
 
         <button className={ styles["patient__results-add-button"] } onClick={ handleAddNewPatientResultClick }>
-          <FaCirclePlus />
+          <FaCirclePlus size={ returnIconSizeByWindowSize() }/>
           Adicionar Resultado
         </button>
       </div>
@@ -356,13 +362,13 @@ function PatientResults({ patient, setExamNameTobeReferenced, setResultsTobeRefe
             <div className={ styles["patient__results"] }>
               {
                 groupedResults[key].map((result, index) => (
-                  <button key={ index } className={ styles["patient__result"] } onClick={ () => handleExamClick(result)}>
+                  <button key={ index } id={ `result-${key}-${index}` } className={ styles["patient__result"] } onClick={ () => handleExamClick(result)}>
                     <p className={ styles["patient__result-exam"] }>{ groupByCategory === 'data' ? result.nome_exame : returnFormatedDate(result.data_exame) }</p>
                     
                     <div className={ styles["patient__result-values"] }>
                       <p className={ styles["patient__result-value"] }>
                         { result.resultado }{ result.unidade_exame } {' '}
-                        ({ returnPatientResultClassification(result) }) 
+                        <span>({ returnPatientResultClassification(result, `result-${key}-${index}`) })</span>
                       </p>
                     </div>
                   </button>
@@ -372,25 +378,6 @@ function PatientResults({ patient, setExamNameTobeReferenced, setResultsTobeRefe
           </div>
         ))
       }
-
-      {/* {
-        (() => {
-          switch(groupByCategory) {
-            case 'data':
-              return <PatientResultsGroupedbyDate
-                resultados={ groupedResults } 
-                setExamNameTobeReferenced={ setExamNameTobeReferenced }
-                setResultsTobeReferenced={ setResultsTobeReferenced }
-              />
-            case 'exame':
-              return <PatientResultsGroupedbyExam
-                resultados={ groupedResults } 
-                setExamNameTobeReferenced={ setExamNameTobeReferenced }
-                setResultsTobeReferenced={ setResultsTobeReferenced }
-              />
-          }
-      })()
-      } */}
     </section>
   );
 }

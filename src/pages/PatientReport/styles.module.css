@@ -78,6 +78,7 @@
 }
 
 .patient__results-groupby-select {
+  cursor: pointer;
   color: var(--black);
   border: 1px solid var(--black);
   border-radius: var(--borderRadius10);
@@ -131,6 +132,10 @@
   justify-content: space-between;
 }
 
+.patient__result--hightlighted {
+  color: var(--red);
+}
+
 .patient__result-exam {
   overflow: hidden; 
   white-space: nowrap;
@@ -142,6 +147,10 @@
 
 .patient__result-value {
   white-space: nowrap;
+}
+
+.patient__result-value span {
+  text-transform: capitalize;
 }
 
 @media (max-width: 767px) {
