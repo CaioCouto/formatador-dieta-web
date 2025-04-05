@@ -243,8 +243,6 @@ function PatientResults({ patient, setExamNameTobeReferenced, setResultsTobeRefe
 
       formatedResult['shouldBeHighlighted'] = formatedResult.classification.toLowerCase() !== 'ideal';
 
-      console.log(formatedResult);
-
       if(formatedPacienteResults[examDate]) {
         formatedPacienteResults[examDate].push(formatedResult);
       }
