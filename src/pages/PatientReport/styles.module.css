@@ -132,7 +132,7 @@
   justify-content: space-between;
 }
 
-.patient__result--hightlighted {
+.patient__result--highlighted {
   color: var(--red);
 }
 

@@ -34,10 +34,8 @@ function returnPatientAge(birthdate) {
   return birthdayHasPassed ? age : age - 1;
 }
 
-function returnPatientResultClassification(result, targetElementId) {
+function returnPatientResultClassification(valor, valoresReferencia) {
   let classification = 'alterado';
-  const valor = result.resultado;
-  const valoresReferencia = result.valores_referencia;
 
   valoresReferencia.forEach((ref) => {
     if(classification && classification !== 'alterado') { return; }
@@ -61,11 +59,6 @@ function returnPatientResultClassification(result, targetElementId) {
       }
     }
   });
-
-  if(classification.toLowerCase() !== 'ideal') {
-    const targetElement = document.querySelector(`#${targetElementId}`);
-    targetElement ? targetElement.classList.add(styles["patient__result--hightlighted"]) : null;
-  }
 
   return classification;
 }
@@ -238,13 +231,19 @@ function PatientResults({ patient, setExamNameTobeReferenced, setResultsTobeRefe
     patient.resultados.forEach(result => {
       const [ exam ] = patient.exames.filter(exame => exame.id === result.exame_id);
       const examDate = result.data_exame.split('T')[0];
+      const valores_referencia = exam.resultados.filter(r => r.sexo === 'ambos' || r.sexo === 'm');
       const formatedResult = {
         nome_exame: exam.nome,
         unidade_exame: exam.unidade,
         data_exame: result.data_exame.split('T')[0],
-        valores_referencia: exam.resultados.filter(r => r.sexo === 'ambos' || r.sexo === 'm'),
-        resultado: result.resultado
+        valores_referencia: valores_referencia,
+        resultado: result.resultado,
+        classification: returnPatientResultClassification(result.resultado, valores_referencia)
       };
+
+      formatedResult['shouldBeHighlighted'] = formatedResult.classification.toLowerCase() !== 'ideal';
+
+      console.log(formatedResult);
 
       if(formatedPacienteResults[examDate]) {
         formatedPacienteResults[examDate].push(formatedResult);
@@ -362,13 +361,13 @@ function PatientResults({ patient, setExamNameTobeReferenced, setResultsTobeRefe
             <div className={ styles["patient__results"] }>
               {
                 groupedResults[key].map((result, index) => (
-                  <button key={ index } id={ `result-${key}-${index}` } className={ styles["patient__result"] } onClick={ () => handleExamClick(result)}>
+                  <button key={ index } className={ `${styles["patient__result"]} ${result.shouldBeHighlighted ? styles["patient__result--highlighted"] : '' }` } onClick={ () => handleExamClick(result)}>
                     <p className={ styles["patient__result-exam"] }>{ groupByCategory === 'data' ? result.nome_exame : returnFormatedDate(result.data_exame) }</p>
                     
                     <div className={ styles["patient__result-values"] }>
                       <p className={ styles["patient__result-value"] }>
                         { result.resultado }{ result.unidade_exame } {' '}
-                        <span>({ returnPatientResultClassification(result, `result-${key}-${index}`) })</span>
+                        {/* <span>({ returnPatientResultClassification(result) })</span> */}
                       </p>
                     </div>
                   </button>
