@@ -91,6 +91,8 @@ export default function PatientReport() {
       resultados: responsePaciente.resultados,
       exames: responsePaciente.exames,
     });
+
+    console.log(responsePaciente)
     
     setLoading(false);
   }
@@ -231,7 +233,7 @@ function PatientResults({ patient, setExamNameTobeReferenced, setResultsTobeRefe
     patient.resultados.forEach(result => {
       const [ exam ] = patient.exames.filter(exame => exame.id === result.exame_id);
       const examDate = result.data_exame.split('T')[0];
-      const valores_referencia = exam.resultados.filter(r => r.sexo === 'ambos' || r.sexo === 'm');
+      const valores_referencia = exam.resultados.filter(r => r.sexo === 'ambos' || r.sexo === patient.sexo);
       const formatedResult = {
         nome_exame: exam.nome,
         unidade_exame: exam.unidade,
