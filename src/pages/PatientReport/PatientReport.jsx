@@ -12,7 +12,8 @@ import { AddPatientResultModal } from "./PatientReportComponents";
 
 
 function returnExtractedNumbersFromResultValue(value) {
-  let numbers = value.match(/\d*/g);
+  value = value.replace(/[,.]/g, '.');
+  let numbers = value.match(/\d+\.*\d+/g);
   if(numbers) {
     return numbers.filter(n => !!n).map(n => Number(n));
   }
@@ -91,8 +92,6 @@ export default function PatientReport() {
       resultados: responsePaciente.resultados,
       exames: responsePaciente.exames,
     });
-
-    console.log(responsePaciente)
     
     setLoading(false);
   }
