@@ -259,12 +259,14 @@ function PatientResults({ patient, setExamNameTobeReferenced, setResultsTobeRefe
     patient.resultados.forEach(result => {
       const [ exam ] = patient.exames.filter(exame => exame.id === result.exame_id);
       const examName = exam.nome;
+      const valores_referencia = exam.resultados.filter(r => r.sexo === 'ambos' || r.sexo === patient.sexo);
       const formatedResult = {
         nome_exame: examName,
         unidade_exame: exam.unidade,
         data_exame: result.data_exame.split('T')[0],
-        valores_referencia: exam.resultados.filter(r => r.sexo === 'ambos' || r.sexo === 'm'),
-        resultado: result.resultado
+        valores_referencia: valores_referencia,
+        resultado: result.resultado,
+        classification: returnPatientResultClassification(result.resultado, valores_referencia)
       };
 
       if(pacienteResultsGroupedbyExam[examName]) {
@@ -273,8 +275,8 @@ function PatientResults({ patient, setExamNameTobeReferenced, setResultsTobeRefe
       else {
         pacienteResultsGroupedbyExam[examName] = [formatedResult];
       }
-      setGroupedResults(pacienteResultsGroupedbyExam);
     });
+    setGroupedResults(pacienteResultsGroupedbyExam);
   }
 
   function pushResultsWrapperRef(el) {
