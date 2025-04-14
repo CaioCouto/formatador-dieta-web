@@ -13,7 +13,7 @@ import { AddPatientResultModal } from "./PatientReportComponents";
 
 function returnExtractedNumbersFromResultValue(value) {
   value = value.replace(/[,.]/g, '.');
-  let numbers = value.match(/\d+\.*\d+/g);
+  let numbers = value.match(/\d*\.*\d*/g);
   if(numbers) {
     return numbers.filter(n => !!n).map(n => Number(n));
   }
@@ -55,7 +55,7 @@ function returnPatientResultClassification(valor, valoresReferencia) {
       if(valor >= refValueNumbers) { classification = ref.resultado; }      
     }
     else if (refValue.includes('-')) {
-      if(valor > refValueNumbers[0] && valor <= refValueNumbers[1]) {
+      if(valor >= refValueNumbers[0] && valor <= refValueNumbers[1]) {
         classification = ref.resultado;
       }
     }
