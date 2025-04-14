@@ -196,7 +196,7 @@ export default function ExamReaderExamForm() {
       filteredExamsResults = filteredExamsResults.map(item => ({ 
         ...item,
         exame_id: examId,
-        valor: item.valor
+        valor: item.valor.replace(/[.]/g, '')
       }));
 
       setAlert({
