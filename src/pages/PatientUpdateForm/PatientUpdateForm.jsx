@@ -82,6 +82,8 @@ export default function PatientUpdateForm() {
       else {
         formatedPacienteResults[examDate] = [formatedResult];
       }
+
+      formatedPacienteResults[examDate].sort((a, b) => a.nome_exame.localeCompare(b.nome_exame, 'pt-br'));
     });
 
     setPatientName(responsePaciente.nome);
@@ -192,6 +194,16 @@ export default function PatientUpdateForm() {
         throw new FormFieldError('Todos os campos do formulário devem estar preenchidos!');
       }
 
+      const results = [];
+      Object.values(patientResults).forEach(r => {
+        r.forEach(res => {
+          const tempResult = Number(String(res.resultado).replace(',', '.'));
+          if(isNaN(tempResult)) throw new FormFieldError('Os resultados deve conter apenas números válidos.');
+          res.resultado = tempResult;
+          results.push(res)
+        });
+      });
+
       setLoading(true);
 
       setAlert({
@@ -199,11 +211,6 @@ export default function PatientUpdateForm() {
         type: 'info',
         show: true
       });
-
-      const results = [];
-      Object.values(patientResults).forEach(r => {
-        r.forEach(res => results.push(res));
-      })
 
       await updatePatientDataOnDataBase(
         patientId, 
@@ -405,8 +412,8 @@ function PatientResults({ results, allExams, handleResultChange, openDeleteConfi
                       type="text" 
                       name="patientExamResult" 
                       id="patientExamResult" 
-                      value={ result.resultado }
-                      onChange={ (e) => handleResultChange(examDate, index, 'resultado', Number(e.target.value)) }
+                      value={ String(result.resultado).replace('.', ',') }
+                      onChange={ (e) => handleResultChange(examDate, index, 'resultado', e.target.value) }
                     />
                   </div>
                   
