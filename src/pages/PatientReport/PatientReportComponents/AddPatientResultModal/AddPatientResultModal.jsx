@@ -125,7 +125,7 @@ export default function AddPatientResultModal({ pacienteId }) {
   async function handleFormSubmit(e) {
     e.preventDefault();
 
-    if (!selectedExam || !selectedExamDate || !selectedExamResult) {
+    if (!selectedExam || !selectedExamDate || isNaN(Number(selectedExamResult))) {
       return setShowHelperText({
         selectedExam: {
           show: !selectedExam,
