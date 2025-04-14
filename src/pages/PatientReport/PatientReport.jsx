@@ -84,12 +84,21 @@ export default function PatientReport() {
     setLoading(true);
     let responsePaciente = await axios.get(`${import.meta.env.VITE_LOCALHOST_API_BASE_URL}/patients/${patientId}`);
     responsePaciente = responsePaciente.data;
+
+    let formatedPacienteResults = responsePaciente.resultados.map(r => {
+      const exam = responsePaciente.exames.find(e => e.id === r.exame_id);
+      r.nome_exame = exam.nome;
+      r.unidade_exame = exam.unidade;
+      r.data_exame = r.data_exame.split('T')[0];
+      return r;
+    }).sort((a, b) => a.nome_exame.localeCompare(b.nome_exame, 'pt-br'));
+    
     
     setPatient({
       nome: responsePaciente.nome,
       sexo: responsePaciente.sexo,
       data_nascimento: responsePaciente.data_nascimento.split('T')[0],
-      resultados: responsePaciente.resultados,
+      resultados: formatedPacienteResults,
       exames: responsePaciente.exames,
     });
     
@@ -231,12 +240,11 @@ function PatientResults({ patient, setExamNameTobeReferenced, setResultsTobeRefe
     const formatedPacienteResults = {};
     patient.resultados.forEach(result => {
       const [ exam ] = patient.exames.filter(exame => exame.id === result.exame_id);
-      const examDate = result.data_exame.split('T')[0];
       const valores_referencia = exam.resultados.filter(r => r.sexo === 'ambos' || r.sexo === patient.sexo);
       const formatedResult = {
-        nome_exame: exam.nome,
-        unidade_exame: exam.unidade,
-        data_exame: result.data_exame.split('T')[0],
+        nome_exame: result.nome_exame,
+        unidade_exame: result.unidade_exame,
+        data_exame: result.data_exame,
         valores_referencia: valores_referencia,
         resultado: result.resultado,
         classification: returnPatientResultClassification(result.resultado, valores_referencia)
@@ -244,11 +252,11 @@ function PatientResults({ patient, setExamNameTobeReferenced, setResultsTobeRefe
 
       formatedResult['shouldBeHighlighted'] = formatedResult.classification.toLowerCase() !== 'ideal';
 
-      if(formatedPacienteResults[examDate]) {
-        formatedPacienteResults[examDate].push(formatedResult);
+      if(formatedPacienteResults[result.data_exame]) {
+        formatedPacienteResults[result.data_exame].push(formatedResult);
       }
       else {
-        formatedPacienteResults[examDate] = [formatedResult];
+        formatedPacienteResults[result.data_exame] = [formatedResult];
       }
     });
     setGroupedResults(formatedPacienteResults);
@@ -258,22 +266,23 @@ function PatientResults({ patient, setExamNameTobeReferenced, setResultsTobeRefe
     const pacienteResultsGroupedbyExam = {};
     patient.resultados.forEach(result => {
       const [ exam ] = patient.exames.filter(exame => exame.id === result.exame_id);
-      const examName = exam.nome;
       const valores_referencia = exam.resultados.filter(r => r.sexo === 'ambos' || r.sexo === patient.sexo);
       const formatedResult = {
-        nome_exame: examName,
-        unidade_exame: exam.unidade,
-        data_exame: result.data_exame.split('T')[0],
+        nome_exame: result.nome_exame,
+        unidade_exame: result.unidade_exame,
+        data_exame: result.data_exame,
         valores_referencia: valores_referencia,
         resultado: result.resultado,
         classification: returnPatientResultClassification(result.resultado, valores_referencia)
       };
 
-      if(pacienteResultsGroupedbyExam[examName]) {
-        pacienteResultsGroupedbyExam[examName].push(formatedResult);
+      formatedResult['shouldBeHighlighted'] = formatedResult.classification.toLowerCase() !== 'ideal';
+
+      if(pacienteResultsGroupedbyExam[result.nome_exame]) {
+        pacienteResultsGroupedbyExam[result.nome_exame].push(formatedResult);
       }
       else {
-        pacienteResultsGroupedbyExam[examName] = [formatedResult];
+        pacienteResultsGroupedbyExam[result.nome_exame] = [formatedResult];
       }
     });
     setGroupedResults(pacienteResultsGroupedbyExam);
