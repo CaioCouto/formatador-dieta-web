@@ -9,14 +9,13 @@
 }
 
 .header__menu-link {
-  color: black;
   transition: all 0.250s ease-in-out;
+  color: var(--white);
 }
 
 .header__menu-link:hover {
-  color: black;
   padding-bottom: 1px;
-  border-bottom: 1px solid black;
+  border-bottom: 1px solid var(--white);
   transition: all 0.250s ease-in-out;
 }
 
