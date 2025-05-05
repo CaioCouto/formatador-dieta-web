@@ -11,7 +11,8 @@ import {
   PatientReport,
   Formatter,
   Home,
-  PatientUpdateForm
+  PatientUpdateForm,
+  Login
 } from './pages';
 import { Provider } from 'jotai';
 
@@ -23,6 +24,7 @@ export default function App() {
           <Header/>
           <Routes>
             <Route exact path="/" element={ <Home /> }/>
+            <Route exact path="/login" element={ <Login /> }/>
             <Route exact path="/formatador" element={ <Formatter /> }/>
             <Route path="exams">
               <Route exact path="list" element={ <ExamReader /> }/>
