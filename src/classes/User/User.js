@@ -1,20 +1,13 @@
-import axios from "axios";
+import { axiosInstance } from "../../utils";
 
 const apiBaseURL = import.meta.env.VITE_LOCALHOST_API_BASE_URL;
 
 export default class User {
   async signin(email, password) {
     try {
-      const response = await axios.post(
-        `${apiBaseURL}/users/signin`, 
+      const response = await axiosInstance.post(
+        `/users/signin`, 
         { email, password, },
-        { 
-          headers: {
-            'Access-Control-Allow-Credentials': true,
-            'Content-Type': 'application/json'
-          },
-          withCredentials: true 
-        }
       );
 
       return {
