@@ -10,6 +10,9 @@ import axios from "axios";
 import { FaRegEdit } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import AddExamModal from "../AddExamModal/AddExamModal";
+import { Exams } from "../../../../classes";
+
+const examsController = new Exams();
 
 export default function ExamList() {
   const [ confirmationModal, setConfirmationModal ] = useAtom(ConfirmationModalAtom);
@@ -29,36 +32,15 @@ export default function ExamList() {
 
   async function getAllExams() {
     setLoading(true);
-    try {
-      let allExams = await axios.get(`${import.meta.env.VITE_LOCALHOST_API_BASE_URL}/exams/`);
-      allExams = allExams.data.exams.map(exam => {
-        const resultados_grouped_by_gender = {};
-        let resultados = exam.resultados;
+    const response = await examsController.getAll();
 
-        resultados.forEach(resultado => {
-          if(resultados_grouped_by_gender[resultado.sexo]) {
-            resultados_grouped_by_gender[resultado.sexo].push(resultado);
-          }
-          else {
-            resultados_grouped_by_gender[resultado.sexo] = [resultado];
-          }
-        });
-
-        exam['resultados_grouped_by_gender'] = resultados_grouped_by_gender;
-
-        return exam;
-      });
-      setExams(allExams);
-    } catch (error) {
-      if(error.name === 'AxiosError') {
-        if(error.response.status === 404) {
-          setExams([]);
-        }
-      }
+    if (response.status !== 200) {
+      setExams([]);
+      return;
     }
-    finally {
-      setLoading(false);
-    } 
+
+    setExams(response.data);
+    setLoading(false);
   }
 
   function handleOpenAddExamModal(e) {
@@ -215,7 +197,7 @@ function List({ exams, setExamIdToBeDeleted, populateExamNameParagraphsRefs }) {
             <div className={ styles["examlist__exam-info"] }>
               <div className={ styles["examlist__exam-info-text"] }>
                 <p className={ `examName ${styles["examlist__exam-name"]}` }>{ exam.nome }</p>
-                <p className={ styles["examlist__exam-description"] }> ({ exam.resultados.length } resultados)</p>
+                <p className={ styles["examlist__exam-description"] }> ({ exam.resultados_exames.length } resultados)</p>
               </div>
 
               <div className={ styles["examlist__exam-options"] }>
@@ -234,13 +216,13 @@ function List({ exams, setExamIdToBeDeleted, populateExamNameParagraphsRefs }) {
             </div>
 
             {
-              exam.resultados.length === 0 ?
+              exam.resultados_exames.length === 0 ?
               <div className={ styles["examlist__exam-results"] }>
                 <p>Este exame ainda não possui resultados cadastrados.</p>
               </div> :
               <div className={ styles["examlist__exam-results"] }>
                 <RefereceTable
-                  results={ exam.resultados }
+                  results={ exam.resultados_exames }
                   unit={ exam.unidade }
                   tableClassName={ styles["examlist__exam-table"] }
                   tableRowClassName={ styles["examlist__exam-table-row"]}
