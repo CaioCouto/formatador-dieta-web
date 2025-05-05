@@ -61,8 +61,10 @@
   flex-grow: 1;
   box-sizing: border-box;
   padding: 20px;
-  background-color: var(--primary);
+  background-color: var(--secondary);
   border-radius: var(--borderRadius10);
+  box-shadow: 2px 4px 20px 0 var(--blackOpacity60);
+  color: var(--white);
 }
 
 .examlist__exam-info {
@@ -88,11 +90,11 @@
 }
 
 .examlist__edit-icon {
-  fill: var(--blue);
+  fill: var(--accent-blue);
 }
 
 .examlist__delete-icon {
-  fill: var(--red);
+  fill: var(--accent-orange);
 }
 
 .examlist__exam-name {
@@ -104,7 +106,7 @@
 }
 
 .examlist__exam-table-row:nth-of-type(odd) {
-  background-color: #898957;
+  background-color: var(--accent-green);
 }
 
 .examlist__exam-table-data-sex,
