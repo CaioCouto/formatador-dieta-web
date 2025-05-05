@@ -91,7 +91,7 @@
 
 .modal__form-submit {
   width: 100%;
-  background-color: var(--green);
+  background-color: var(--accent-green);
   color: var(--white);
 }
 

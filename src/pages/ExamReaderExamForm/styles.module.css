@@ -110,7 +110,7 @@
 }
 
 .editor__form-submit {
-  background-color: var(--green);
+  background-color: var(--accent-green);
 }
 
 .editor__form-cancel {

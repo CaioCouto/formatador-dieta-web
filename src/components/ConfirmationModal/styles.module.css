@@ -52,7 +52,7 @@
 }
 
 .modal__confirm {
-  background-color: var(--green);
+  background-color: var(--accent-green);
   color: var(--white);
 }
 

@@ -18,7 +18,7 @@
 }
 
 .alert--success {
-  background-color: var(--green);
+  background-color: var(--accent-green);
 }
 
 .alert--info {

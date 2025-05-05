@@ -83,7 +83,7 @@
 }
 
 .patient__form-submit {
-  background-color: var(--green);
+  background-color: var(--accent-green);
   color: var(--white);
 }
 
