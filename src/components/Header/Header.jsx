@@ -3,12 +3,13 @@ import logo from '../../assets/logo-only-rb.svg';
 import HeaderMenu from '../HeaderMenu';
 import Backdrop from '../Backdrop';
 import { FaBars, FaXmark } from 'react-icons/fa6';
-import { useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { useAtom } from 'jotai';
-import { OpenMobileMenuAtom } from '../../jotai';
+import { OpenMobileMenuAtom, ShowHeaderAtom } from '../../jotai';
 
 
 export default function Header() {
+  const [ showHeader, setShowHeader ] = useAtom(ShowHeaderAtom);
   const [ openMobileMenu, setOpenMobileMenu ] = useAtom(OpenMobileMenuAtom);
   const mobileMenuBackdroprRef = useRef(null);
 
@@ -16,6 +17,11 @@ export default function Header() {
     setOpenMobileMenu(true);
   }
 
+  useEffect(() => {
+    setShowHeader(location.pathname !== '/login');
+  }, []);
+  
+  if(!showHeader) { return null; }
   return (
     <header className={ `${styles['header']}` }>
       <div className={ `wrapper ${styles['header__content']}` }>

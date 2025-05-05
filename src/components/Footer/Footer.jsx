@@ -1,9 +1,18 @@
 import styles from './styles.module.css';
 import logo from '../../assets/logo-only-rb.svg';
+import { useAtom } from 'jotai';
+import { ShowFooterAtom } from '../../jotai';
+import { useEffect } from 'react';
 
 
 export default function Footer() {
+  const [ showFooter, setShowFooter ] = useAtom(ShowFooterAtom);
 
+  useEffect(() => {
+    setShowFooter(location.pathname !== '/login');
+  }, []);
+
+  if(!showFooter) { return null; }
   return (
     <footer className={ `${styles['footer']}` }>
       <div className={ `wrapper ${styles['footer__content']}` }>
