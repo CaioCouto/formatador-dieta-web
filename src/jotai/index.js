@@ -6,6 +6,8 @@ import ExamResultsRefereceTableModalAtom from "./ExamResultsRefereceTableModalAt
 import IconSizeAtom from "./IconSizeAtom";
 import OpenMobileMenuAtom from "./OpenMobileMenuAtom";
 import ShowBackdropAtom from "./ShowBackdropAtom";
+import ShowFooterAtom from "./ShowFooterAtom";
+import ShowHeaderAtom from "./ShowHeaderAtom";
 
 export {
   AddPatientResultModalAtom,
@@ -15,5 +17,7 @@ export {
   ExamResultsRefereceTableModalAtom,
   IconSizeAtom,
   OpenMobileMenuAtom,
-  ShowBackdropAtom
+  ShowBackdropAtom,
+  ShowFooterAtom,
+  ShowHeaderAtom
 };
