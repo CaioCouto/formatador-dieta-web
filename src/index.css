@@ -7,11 +7,14 @@
   --headerHeight: 60px;
 
   /* Start Colors */
-    --primary: #C0C080;
+    --primary: #6A2D0E;
+    --secondary: #8F461C;
+    --accent-orange: #DC4942;
+    --accent-green: #57632e;
     --green: #214E34;
     --blue: #124E78;
     --red: #EF271B;
-    --white: #fff;
+    --white: #FFFCF9;
     --black: #000000;
     --blackOpacity60: #00000099;
     --blackOpacity80: #000000CC;
