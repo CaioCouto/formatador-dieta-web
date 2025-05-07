@@ -1,9 +1,10 @@
 import './App.css';
-import { Footer, Header } from './components';
+import { AppWrapper, Footer, Header, UserReauthorizationModal } from './components';
 import { 
   BrowserRouter as Router,
   Routes,
-  Route
+  Route,
+  useLocation
 } from 'react-router-dom';
 import {
   ExamReader,
@@ -14,30 +15,38 @@ import {
   PatientUpdateForm,
   Login
 } from './pages';
-import { Provider } from 'jotai';
+
+const blockedPaths = ['/login'];
 
 export default function App() {
+  const { pathname } = useLocation();
+
+
   return (
     <>
-      <Router>
-        <Provider>
+      {
+        blockedPaths.includes(pathname) ? null : 
+        <>
+          <UserReauthorizationModal/>
           <Header/>
-          <Routes>
-            <Route exact path="/" element={ <Home /> }/>
-            <Route exact path="/login" element={ <Login /> }/>
-            <Route exact path="/formatador" element={ <Formatter /> }/>
-            <Route path="exams">
-              <Route exact path="list" element={ <ExamReader /> }/>
-              <Route exact path=":id" element={ <ExamReaderExamForm /> }/>
-            </Route>
-            <Route path="patients">
-              <Route exact path="edit/:id" element={ <PatientUpdateForm /> }/>
-              <Route exact path=":id" element={ <PatientReport /> }/>
-            </Route>
-          </Routes>
-          <Footer/>
-        </Provider>
-      </Router>
+        </>
+      }
+      <Routes>
+        <Route exact path="/" element={ <Home /> }/>
+        <Route exact path="/login" element={ <Login /> }/>
+        <Route exact path="/formatador" element={ <Formatter /> }/>
+        <Route path="exams">
+          <Route exact path="list" element={ <ExamReader /> }/>
+          <Route exact path=":id" element={ <ExamReaderExamForm /> }/>
+        </Route>
+        <Route path="patients">
+          <Route exact path="edit/:id" element={ <PatientUpdateForm /> }/>
+          <Route exact path=":id" element={ <PatientReport /> }/>
+        </Route>
+      </Routes>
+      {
+        blockedPaths.includes(pathname) ? null : <Footer/>
+      }
     </>
   );
 }
