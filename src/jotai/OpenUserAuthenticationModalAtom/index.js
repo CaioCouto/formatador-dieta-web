@@ -1,0 +1,3 @@
+import OpenUserAuthenticationModalAtom from "./OpenUserAuthenticationModalAtom";
+
+export default OpenUserAuthenticationModalAtom;
