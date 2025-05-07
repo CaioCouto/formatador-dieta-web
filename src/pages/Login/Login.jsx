@@ -37,9 +37,6 @@ export default function Login() {
 
     const response = await userController.signin(email, password);
     setLoading(false);
-    console.log('login',response)
-
-    localStorage.setItem('user_data', JSON.stringify(response.data));
     
 
     if(response.status !== 200) {
