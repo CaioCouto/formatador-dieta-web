@@ -1,39 +1,34 @@
 import styles from "./styles.module.css";
-import axios from "axios";
 import { useEffect, useRef, useState } from "react";
 import { FaArrowLeft, FaCheck, FaCirclePlus, FaTrash, FaXmark } from "react-icons/fa6";
 import { Alert, ConfirmationModal, ExamResultsRefereceTableModal, Loader } from "../../components";
-import { returnIconSizeByWindowSize } from "../../utils";
+import { returnIconSizeByWindowSize, showAlertComponent } from "../../utils";
 import { useAtom } from "jotai";
 import { ConfirmationModalAtom, ExamResultsRefereceTableModalAtom } from "../../jotai";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { FaRegEdit } from "react-icons/fa";
-import { FormFieldError } from "../../classes";
+import { FormFieldError, Exams, ExamResults } from "../../classes";
 
-async function updateExamDataOnDataBase(examId, examName, examUnit) {
-  await axios.patch(`${import.meta.env.VITE_LOCALHOST_API_BASE_URL}/exams/${examId}`, 
-    { nome: examName, unidade: examUnit }
-  );
-}
+const examsController = new Exams();
+const examsResultsController = new ExamResults();
 
-async function deleteExamFromDatabase(examId) {
-  await axios.delete(`${import.meta.env.VITE_LOCALHOST_API_BASE_URL}/exams/${examId}`);
-}
+function evaluateIfExamResultsHaveChanged(originalResults, newResults) {
+  if(originalResults.length !== newResults.length) {
+    return true;
+  }
 
-async function updateExamsResultsOnDataBase(examId, examResults) {
-  await axios.patch(
-    `${import.meta.env.VITE_LOCALHOST_API_BASE_URL}/exam-results/${examId}`, 
-    examResults
-  );
-}
+  for (let i = 0; i < originalResults.length; i++) {
+    if(originalResults[i].valor !== newResults[i].valor) {
+      return true;
+    }
+  }
 
-async function deleteExamResultOnDataBase(examResultId) {
-  await axios.delete(
-    `${import.meta.env.VITE_LOCALHOST_API_BASE_URL}/exam-results/${examResultId}`
-  );
+  return false;
 }
 
 export default function ExamReaderExamForm() {
+  const navigate = useNavigate();
+
   const examId = Number(useParams('id').id);
   const deleteExamResultButtonRef = useRef(null);
   const [ confirmationModal, setConfirmationModal ] = useAtom(ConfirmationModalAtom);
@@ -52,13 +47,25 @@ export default function ExamReaderExamForm() {
   });
 
   async function getExamByRouteId() {
-    let responseExame = await axios.get(`${import.meta.env.VITE_LOCALHOST_API_BASE_URL}/exams/${examId}`);
+    let responseExame = await examsController.getExamById(examId);
+    
+    if (responseExame.status !== 200) {
+      showAlertComponent(
+        `${responseExame.message} Redirecionando para lista de exames...`,
+        'error',
+        true,
+        setAlert
+      );
+      setTimeout(() => {navigate('/exams/list', { replace: true }); }, 3000);
+      return;
+    }
+
     responseExame = responseExame.data;
     setExam(responseExame);
     setExamName(responseExame.nome);
     setExamunit(responseExame.unidade);
-    if(responseExame.resultados.length > 0) {
-      setExamsResults(responseExame.resultados);
+    if(responseExame.resultados_exames.length > 0) {
+      setExamsResults(responseExame.resultados_exames);
     }
   }
 
@@ -80,7 +87,7 @@ export default function ExamReaderExamForm() {
 
   function handleResultChange(index, field, newValue) {
     const newResults = examsResults.map((item, i) => 
-      i === index ? { ...item, [field]: newValue } : item
+      i === index ? { ...item, [field]: newValue.replace('.', ',') } : item
     );
     setExamsResults(newResults);
   }
@@ -131,14 +138,14 @@ export default function ExamReaderExamForm() {
       });
 
       if(resultIndexToBeDeletedIsNull) {
-        await deleteExamFromDatabase(examId);
-        return window.location.href = '/exams/list';
+        await examsController.deleteExam(examId);
+        return navigate('/exams/list', { replace: true });
       }
       const examResultId = examsResults[resultIndexToBeDeleted].id;
       const newResults = examsResults.filter((_, i) => i !== resultIndexToBeDeleted);
       
       if(examResultId) {
-        await deleteExamResultOnDataBase(examResultId);
+        await examsResultsController.deleteExamResult(examResultId);
       }
       
       setExamsResults(newResults.length > 0 ? newResults : [{ value: '', result: '' }]);
@@ -181,66 +188,90 @@ export default function ExamReaderExamForm() {
   async function handleFormSubmit(e) {
     e.preventDefault();
     
-    try {
-      setLoading(true);
-      let filteredExamsResults = examsResults.filter(item => item.valor && item.resultado);
-      
+    try {      
       if(!examName) {
         setExamName(exam.nome);
         throw new FormFieldError('O nome do exame não pode estar vazio.');
       }
-      else if (filteredExamsResults.length === 0) {
-        throw new FormFieldError('Pelo menos um resultado deve ser adicionado.');
-      }
-
-      filteredExamsResults = filteredExamsResults.map(item => ({ 
-        ...item,
-        exame_id: examId,
-        valor: item.valor.replace(/[.]/g, '')
-      }));
-
-      setAlert({
-        message: 'Atualizando Dados do exame...',
-        type: 'info',
-        show: true
-      })
-
-      await updateExamDataOnDataBase(examId, examName, examUnit);
-      await updateExamsResultsOnDataBase(examId, filteredExamsResults);
       
-      setAlert({
-        message: 'Exame atualizado com sucesso!',
-        type: 'success',
-        show: true
-      });
+      let filteredExamsResults = examsResults
+                                  .filter(item => item.valor && item.resultado)
+                                  .map(item => ({ 
+                                    ...item,
+                                    exame_id: examId,
+                                    valor: item.valor.replace(/[.]/g, '')
+                                  }));
 
-      window.location.reload();
-    } catch (error) {
-      let alertMessage = '';
+      let examResponse, createExamResultsResponse, updateExamResultsResponse;
+      const examResultsHaveChanged = evaluateIfExamResultsHaveChanged(exam.resultados_exames, filteredExamsResults);
 
-      if(error.name === 'AxiosError') {
-        alertMessage = error.response.data.message;
-        console.log(error.response)
+      if(examName === exam.nome && examUnit === exam.unidade && !examResultsHaveChanged) {
+        return;
       }
+      else {
+        setLoading(true);
+
+        showAlertComponent(
+          'Atualizando Dados do exame...',
+          'info',
+          true,
+          setAlert
+        );
+        
+        if(examName !== exam.nome || examUnit !== exam.unidade) {
+          examResponse = await examsController.updateExam(examId, examName, examUnit);
+        }
+        
+        if(examResultsHaveChanged) {
+          const resultsToUpdate = []; 
+          const resultsToCreate = [];
+          filteredExamsResults.forEach(result => {
+            if(result.id) { resultsToUpdate.push(result); }
+            else { resultsToCreate.push(result); }
+          });
+
+          createExamResultsResponse = await examsResultsController.createExamResults(resultsToCreate);
+          updateExamResultsResponse = await examsResultsController.updateExamResults(resultsToUpdate);
+        }
+      }
+
+      if(
+        (examResponse && examResponse.status !== 200) || 
+        (createExamResultsResponse && createExamResultsResponse.status !== 200) ||
+        (updateExamResultsResponse && updateExamResultsResponse.status !== 200)
+      ) {
+        showAlertComponent(
+          examResponse.message || createExamResultsResponse.message || updateExamResultsResponse.message,
+          'error',
+          true,
+          setAlert
+        );
+        return;
+      }
+
+      showAlertComponent(
+        'Exame atualizado com sucesso!',
+        'success',
+        true,
+        setAlert
+      );
+      setEdit(false);
+      setLoading(false);
+    } catch (error) {
+      let alertMessage = error.message || 'Um erro correu ao atualizar o exame.';
 
       alertMessage = error.message;
-      
-      setAlert({
-        message: alertMessage,
-        type: 'error',
-        show: true
-      });
+
+      showAlertComponent(
+        alertMessage,
+        'error',
+        true,
+        setAlert
+      );
       
     } finally {
       setEdit(false);
       setLoading(false);
-
-      setTimeout(() => {
-        setAlert({
-          ...alert,
-          show: false
-        })
-      }, 5000);
     }
   }
 
@@ -250,6 +281,12 @@ export default function ExamReaderExamForm() {
 
   return (
     <main className={ `wrapper ${styles["editor"]}` }>
+      <Alert
+        message={ alert.message }
+        type={ alert.type }
+        show={ alert.show }
+      />
+
       {
         !exam ? 
           <Splash /> :
@@ -259,12 +296,6 @@ export default function ExamReaderExamForm() {
               <ExamResultsRefereceTableModal results={ examsResults } />
               : null
             }
-
-            <Alert
-              message={ alert.message }
-              type={ alert.type }
-              show={ alert.show }
-            />
 
             <Link to="/exams/list" className={ styles["editor__form-back"] }>
               <FaArrowLeft size={ returnIconSizeByWindowSize() } />
