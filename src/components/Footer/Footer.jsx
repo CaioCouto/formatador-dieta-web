@@ -8,10 +8,6 @@ import { useEffect } from 'react';
 export default function Footer() {
   const [ showFooter, setShowFooter ] = useAtom(ShowFooterAtom);
 
-  useEffect(() => {
-    setShowFooter(location.pathname !== '/login');
-  }, []);
-
   if(!showFooter) { return null; }
   return (
     <footer className={ `${styles['footer']}` }>

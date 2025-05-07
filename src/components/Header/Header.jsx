@@ -16,10 +16,6 @@ export default function Header() {
   function handleMobileMenuIconClick(e) {
     setOpenMobileMenu(true);
   }
-
-  useEffect(() => {
-    setShowHeader(location.pathname !== '/login');
-  }, []);
   
   if(!showHeader) { return null; }
   return (
