@@ -1,6 +1,8 @@
 import { axiosInstance } from "../../utils";
 
-const access_token = JSON.parse(localStorage.getItem("user_data")).access_token;
+
+const userData = JSON.parse(localStorage.getItem("user_data"));
+const access_token = userData ? userData.access_token : null;
 
 export default class Exams {
   async getAll() {
@@ -38,14 +40,143 @@ export default class Exams {
       };
     } catch (error) {
       if(error.name === 'AxiosError') {
-        if(error.response.status === 404) {
+        if(error.response) {
           return {
-            status: 404,
+            status: error.response.status,
             data: []
           };
         }
       }
       
+    }
+  }
+
+  async getExamById(id) {
+    try {
+      let response = await axiosInstance.get(
+        `/exams/${id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${access_token}`,
+          },
+        }
+      );
+  
+      return {
+        status: 200,
+        data: response.data[0]
+      };
+    } catch (error) {
+      let status = 500;
+      let message = 'Ocorreu um erro ao buscar o exame.';
+
+      if(error.name === 'AxiosError') {
+        if(error.response) {
+          status = error.response.status;
+          message = error.response.data.message;
+        }
+      }
+
+      return {
+        status: status,
+        message: message
+      };  
+      
+    }
+  }
+
+  async createExam(nome, unidade) {
+    try {
+      let response = await axiosInstance.post(
+        `/exams`,
+        { nome: nome, unidade: unidade },
+        {
+          headers: {
+            Authorization: `Bearer ${access_token}`,
+          },
+        }
+      );
+
+      return {
+        status: 200,
+        examId: response.data[0].id
+      };
+    } catch (error) {
+      let status = 500;
+      let message = 'Ocorreu um erro ao salvar o exame.';
+
+      if(error.name === 'AxiosError') {
+        if(error.response) {
+          status = error.response.status;
+          message = error.response.data.message;
+        }
+      }
+
+      return {
+        status: status,
+        message: message
+      };      
+    }
+  }
+
+  async updateExam(examId, nome, unidade) {
+    try {
+      let response = await axiosInstance.put(
+        `/exams/${examId}`,
+        { nome: nome, unidade: unidade },
+        {
+          headers: {
+            Authorization: `Bearer ${access_token}`,
+          },
+        }
+      );
+
+      console.log(response);
+
+      return {
+        status: 200,
+        examId: response.data[0].id
+      };
+    } catch (error) {
+      let status = 500;
+      let message = 'Ocorreu um erro ao salvar o exame.';
+
+      if(error.name === 'AxiosError') {
+        if(error.response) {
+          status = error.response.status;
+          message = error.response.data.message;
+        }
+      }
+
+      return {
+        status: status,
+        message: message
+      };      
+    }
+  }
+
+  async deleteExam(examId) {
+    try {
+      let response = await axiosInstance.delete(`/exams/${examId}`);
+
+      return {
+        status: 200,
+      };
+    } catch (error) {
+      let status = 500;
+      let message = 'Ocorreu um erro ao salvar o exame.';
+
+      if(error.name === 'AxiosError') {
+        if(error.response) {
+          status = error.response.status;
+          message = error.response.data.message;
+        }
+      }
+
+      return {
+        status: status,
+        message: message
+      };      
     }
   }
 }
