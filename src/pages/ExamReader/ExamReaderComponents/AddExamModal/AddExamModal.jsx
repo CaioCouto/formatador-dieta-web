@@ -6,8 +6,10 @@ import { Alert, Backdrop, Loader } from "../../../../components";
 import styles from './styles.module.css';
 import { FaCheck, FaXmark } from "react-icons/fa6";
 import { returnIconSizeByWindowSize, showAlertComponent } from "../../../../utils";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { Exams } from "../../../../classes";
+
+const examsController = new Exams();
 
 export default function AddExamModal() {
   const navigate = useNavigate();
@@ -67,35 +69,28 @@ export default function AddExamModal() {
       setAlert
     );
 
-    try {
-      let exam = await axios.post(
-        `${import.meta.env.VITE_LOCALHOST_API_BASE_URL}/exams/`, 
-        { nome: examName, unidade: examUnit }
-      );
-      exam = exam.data;
+    let response = await examsController.createExam(examName, examUnit);
 
+    setLoading(false);
+    if(response.status !== 200) {
       showAlertComponent(
-        'Exame salvo com sucesso!',
-        'success',
+        response.message,
+        'error',
         true,
         setAlert
       );
-
-      setOpenaddExamModal(false);
-
-      navigate(`/exams/${exam.id}`);
-      
-    } catch (error) {
-      console.log(error);
-      console.log(error.name);
-      if (error.name === 'AxiosError') {
-        console.log(error.response.data);
-      }
-    }
-    finally {
-      setLoading(false);
+      return;
     }
 
+    showAlertComponent(
+      'Exame salvo com sucesso! Redirecionando...',
+      'success',
+      true,
+      setAlert
+    );
+    
+    setOpenaddExamModal(false);
+    navigate(`/exams/${response.examId}`);
   }
 
   return (
