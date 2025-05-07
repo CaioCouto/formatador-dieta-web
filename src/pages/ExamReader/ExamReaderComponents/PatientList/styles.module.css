@@ -62,6 +62,7 @@
   flex-grow: 1;
   box-sizing: border-box;
   padding: 20px;
+  color: var(--white);
   background-color: var(--primary);
   border-radius: var(--borderRadius10);
 }

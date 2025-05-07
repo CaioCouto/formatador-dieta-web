@@ -5,11 +5,12 @@ import { Alert, ConfirmationModal, Loader } from "../../../../components";
 
 import styles from './styles.module.css';
 import { FaMagnifyingGlass, FaTrash } from "react-icons/fa6";
-import { returnIconSizeByWindowSize, searchTermOnHTMLElement } from "../../../../utils";
-import axios from "axios";
-import { FaRegEdit } from "react-icons/fa";
-import { Link, useNavigate } from "react-router-dom";
+import { returnIconSizeByWindowSize, searchTermOnHTMLElement, showAlertComponent } from "../../../../utils";
+import { useNavigate } from "react-router-dom";
 import AddPatientModal from "../AddPatientModal";
+import { Patients } from "../../../../classes";
+
+const patientsController = new Patients();
 
 export default function PatientList() {
   const [ confirmationModal, setConfirmationModal ] = useAtom(ConfirmationModalAtom);
@@ -30,9 +31,10 @@ export default function PatientList() {
   async function getAllPatients() {
     try {
       setLoading(true);
-      let allPatients = await axios.get(`${import.meta.env.VITE_LOCALHOST_API_BASE_URL}/patients/`);
+      const response = await patientsController.getAll();
       
-      setPatients(allPatients.data.patients);
+      
+      setPatients(response.data);
     } catch (error) {
       if(error.name === 'AxiosError') {
         const response = error.response;
@@ -75,55 +77,44 @@ export default function PatientList() {
   }
 
   async function deletePatient() {
-    try {
-      setLoading(true);
-      setConfirmationModal({
-        ...confirmationModal,
-        show: false,
-      });
+    setLoading(true);
+    setConfirmationModal({
+      ...confirmationModal,
+      show: false,
+    });
 
-      setAlert({
-        message: 'Deletando paciente...',
-        type: 'info',
-        show: true
-      });
+    const targetPatientname = patients.filter(patient => patient.id === patientIdToBeDeleted)[0].nome;
 
-      await axios.delete(`${import.meta.env.VITE_LOCALHOST_API_BASE_URL}/patients/${patientIdToBeDeleted}`);
-      
+    showAlertComponent(
+      `Deletando paciente "${targetPatientname}"...`,
+      'info',
+      true,
+      setAlert
+    );
+
+    const response = await patientsController.deletePatient(patientIdToBeDeleted);
+
+    if(response.status !== 200) {
+      showAlertComponent(
+        response.message,
+        'error',
+        true,
+        setAlert
+      );
+    }
+    else {
       const newPatients = patients.filter((patient, i) => patient.id !== patientIdToBeDeleted);
       setPatients(newPatients);
 
-      setAlert({
-        message: 'Paciente deletado com sucesso!',
-        type: 'success',
-        show: true
-      });
-    } catch (error) {
-      let alertMessage = '';
-
-      if(error.name === 'AxiosError') {
-        alertMessage = error.response.data.message;
-        console.log(error.response)
-      }
-
-      alertMessage = error.message;
-      
-      setAlert({
-        message: alertMessage,
-        type: 'error',
-        show: true
-      });  
-      
-    } finally {
-      setLoading(false);
-
-      setTimeout(() => {
-        setAlert({
-          ...alert,
-          show: false
-        });
-      }, 5000);
+      showAlertComponent(
+        `Paciente "${targetPatientname}" deletado com sucesso!`,
+        'success',
+        true,
+        setAlert
+      );
     }
+    
+    setLoading(false);
   }
 
   useEffect(() => { getAllPatients(); }, []);
