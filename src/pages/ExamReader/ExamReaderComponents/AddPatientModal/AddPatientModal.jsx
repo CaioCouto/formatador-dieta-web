@@ -6,8 +6,10 @@ import { Alert, Backdrop, Loader } from "../../../../components";
 import styles from './styles.module.css';
 import { FaCheck, FaXmark } from "react-icons/fa6";
 import { returnIconSizeByWindowSize, showAlertComponent } from "../../../../utils";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { Patients } from "../../../../classes";
+
+const patientsController = new Patients();
 
 export default function AddPatientModal() {
   const navigate = useNavigate();
@@ -83,39 +85,21 @@ export default function AddPatientModal() {
       setAlert
     );
 
-    try {
-      let patient = await axios.post(
-        `${import.meta.env.VITE_LOCALHOST_API_BASE_URL}/patients/`, 
-        { 
-          nome: patientName,
-          data_nascimento: patientBirthdate,
-          sexo: patientGender
-        }
-      );
-      patient = patient.data;
+    const response = await patientsController.createPatient(patientName, patientBirthdate, patientGender);
 
+    if (response.status !== 200) {
       showAlertComponent(
-        'Paciente salvo com sucesso!',
-        'success',
+        response.message,
+        'error',
         true,
         setAlert
       );
-
-      setOpenAddPatientModal(false);
-
-      navigate(`/patients/${patient.id}`);
-      
-    } catch (error) {
-      console.log(error);
-      console.log(error.name);
-      if (error.name === 'AxiosError') {
-        console.log(error.response.data);
-      }
-    }
-    finally {
-      setLoading(false);
     }
 
+    setLoading(false);
+    setOpenAddPatientModal(false);
+
+    navigate(`/patients/${response.patientId}`);
   }
 
   return (
