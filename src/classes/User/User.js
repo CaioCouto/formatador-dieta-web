@@ -10,6 +10,8 @@ export default class User {
         { email, password, },
       );
 
+      localStorage.setItem('user_data', JSON.stringify(response.data));
+
       return {
         status: 200,
         data: response.data
