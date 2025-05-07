@@ -5,8 +5,7 @@ import { Alert, ConfirmationModal, Loader, RefereceTable } from "../../../../com
 
 import styles from './styles.module.css';
 import { FaMagnifyingGlass, FaTrash } from "react-icons/fa6";
-import { returnIconSizeByWindowSize, searchTermOnHTMLElement } from "../../../../utils";
-import axios from "axios";
+import { returnIconSizeByWindowSize, searchTermOnHTMLElement, showAlertComponent } from "../../../../utils";
 import { FaRegEdit } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import AddExamModal from "../AddExamModal/AddExamModal";
@@ -33,11 +32,6 @@ export default function ExamList() {
   async function getAllExams() {
     setLoading(true);
     const response = await examsController.getAll();
-
-    if (response.status !== 200) {
-      setExams([]);
-      return;
-    }
 
     setExams(response.data);
     setLoading(false);
@@ -79,51 +73,59 @@ export default function ExamList() {
         show: false,
       });
 
+      const targetExamName = exams.filter(exam => exam.id === examIdToBeDeleted)[0].nome;
+
       setAlert({
-        message: 'Deletando exame...',
+        message: `Deletando exame "${targetExamName}"...`,
         type: 'info',
         show: true
       });
 
-      await axios.delete(`${import.meta.env.VITE_LOCALHOST_API_BASE_URL}/exams/${examIdToBeDeleted}`);
+      const response = await examsController.deleteExam(examIdToBeDeleted);
+
+      if(response.status !== 200) {
+        showAlertComponent(
+          response.message,
+          'error',
+          true,
+          setAlert
+        );
+        return;
+      }
       
       const newExams = exams.filter((exam, i) => exam.id !== examIdToBeDeleted);
       setExams(newExams);
 
-      setAlert({
-        message: 'Exame Deletado com sucesso!',
-        type: 'success',
-        show: true
-      });
+      showAlertComponent(
+        `Exame "${targetExamName}" deletado com sucesso!`,
+        'success',
+        true,
+        setAlert
+      );
     } catch (error) {
       let alertMessage = '';
 
       if(error.name === 'AxiosError') {
         alertMessage = error.response.data.message;
-        console.log(error.response)
       }
 
       alertMessage = error.message;
-      
-      setAlert({
-        message: alertMessage,
-        type: 'error',
-        show: true
-      });  
+
+      showAlertComponent(
+        alertMessage,
+        'success',
+        true,
+        setAlert
+      );
       
     } finally {
       setLoading(false);
-
-      setTimeout(() => {
-        setAlert({
-          ...alert,
-          show: false
-        });
-      }, 5000);
     }
   }
 
-  useEffect(() => { getAllExams(); }, []);
+  useEffect(() => { 
+    getAllExams();
+  }, []);
 
   return (
     <section className={ styles["examlist"] }>
