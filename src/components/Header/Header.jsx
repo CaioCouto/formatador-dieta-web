@@ -53,7 +53,7 @@ function UserSection () {
 
   async function handleSignOutClick() {
     await userController.signOut();
-    navigate('/login', { replace: true });
+    navigate('/', { replace: true });
   }
 
   return (
