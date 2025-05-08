@@ -6,6 +6,6 @@ export default defineConfig({
   plugins: [react()],
   base: '/',
   build: {
-    outDir: '../formatador_dietas/dist',
+    outDir: '../backend/src/Templates',
   }
 })
