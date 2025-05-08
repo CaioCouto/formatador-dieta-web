@@ -23,6 +23,14 @@ export default function ConfirmationModal({ message, onConfirm }) {
     }
   }
 
+  function handleConfirmButtonClick(e) {
+    setConfirmationModal({
+      ...confirmationModal,
+      show: false
+    });
+    onConfirm(e, confirmButtonRef);
+  } 
+
   function handleModalCloseButtonClick() {
     setConfirmationModal({
       ...confirmationModal,
@@ -65,7 +73,7 @@ export default function ConfirmationModal({ message, onConfirm }) {
             ref={ confirmButtonRef }
             type="button" 
             className={ styles['modal__confirm'] }
-            onClick={(e) => onConfirm(e, confirmButtonRef) }
+            onClick={(e) => handleConfirmButtonClick(e) }
           >
             Confirmar
           </button>
