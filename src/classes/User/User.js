@@ -1,12 +1,12 @@
 import { axiosInstance } from "../../utils";
 
-const apiBaseURL = import.meta.env.VITE_LOCALHOST_API_BASE_URL;
+const userRoute = `/users`;
 
 export default class User {
   async signin(email, password) {
     try {
       const response = await axiosInstance.post(
-        `/users/signin`, 
+        `${userRoute}/signin`, 
         { email, password, },
       );
 
@@ -29,6 +29,30 @@ export default class User {
         status: statusCode,
         message: message,
         data: {}
+      };
+    }
+  }
+
+  async signOut() {
+    try {
+      await axiosInstance.post(`${userRoute}/signout`);
+      localStorage.removeItem('user_data');
+      
+      return {
+        status: 200
+      };
+    } catch (error) {
+      let statusCode = 500, message = 'Ocorreu um erro ao efetuar logout.';
+      if(error.name === 'AxiosError') {
+        if(error.response) {
+          statusCode = error.response.status;
+          message = error.response.data.message;
+        }
+      }
+      
+      return {
+        status: statusCode,
+        message: message
       };
     }
   }
