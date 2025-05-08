@@ -1,15 +1,16 @@
 import styles from "./styles.module.css";
-import axios from "axios";
 import { useEffect, useRef, useState } from "react";
 import { FaArrowLeft, FaChevronDown, FaCirclePlus, FaTrash } from "react-icons/fa6";
 import { Alert, ConfirmationModal, ExamResultsRefereceTableModal, Loader } from "../../components";
-import { returnIconSizeByWindowSize } from "../../utils";
+import { returnIconSizeByWindowSize, showAlertComponent } from "../../utils";
 import { useAtom } from "jotai";
 import { AddPatientResultModalAtom, ConfirmationModalAtom, ExamResultsRefereceTableModalAtom } from "../../jotai";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { FaRegEdit } from "react-icons/fa";
 import { AddPatientResultModal } from "./PatientReportComponents";
+import { Patients } from "../../classes";
 
+const patientsController = new Patients();
 
 function returnExtractedNumbersFromResultValue(value) {
   value = value.replace(/[,.]/g, '.');
@@ -59,9 +60,27 @@ function returnPatientResultClassification(valor, valoresReferencia) {
         classification = ref.resultado;
       }
     }
+    else {
+      if(valor === refValueNumbers) { classification = ref.resultado; }
+    }
   });
 
   return classification;
+}
+
+function returnFormatedResult(result, patientGender) {
+  const valores_referencia = result.exames.resultados_exames.filter(r => r.sexo === 'ambos' || r.sexo === patientGender);
+  const formatedResult = {
+    nome_exame: result.nome_exame,
+    unidade_exame: result.unidade_exame,
+    data_exame: result.data_exame,
+    valores_referencia: valores_referencia,
+    resultado: result.resultado,
+    classification: returnPatientResultClassification(result.resultado, valores_referencia)
+  };
+
+  formatedResult['shouldBeHighlighted'] = formatedResult.classification.toLowerCase() !== 'ideal';
+  return formatedResult;
 }
 
 export default function PatientReport() {
@@ -82,17 +101,27 @@ export default function PatientReport() {
 
   async function getPatientByRouteId() {
     setLoading(true);
-    let responsePaciente = await axios.get(`${import.meta.env.VITE_LOCALHOST_API_BASE_URL}/patients/${patientId}`);
-    responsePaciente = responsePaciente.data;
+    const response = await patientsController.getPatientById(patientId);
 
-    let formatedPacienteResults = responsePaciente.resultados.map(r => {
-      const exam = responsePaciente.exames.find(e => e.id === r.exame_id);
-      r.nome_exame = exam.nome;
-      r.unidade_exame = exam.unidade;
+    if(response.status !== 200) {
+      showAlertComponent(
+        `${response.message} Redirecionando para a lista de pacientes...`,
+        'error',
+        true,
+        setAlert
+      );
+      setTimeout(() => {navigate('/exams/list', { replace: true, state: { contentTobeShown: 'Pacientes' } }); }, 3000);
+      return;
+    }
+    
+    const responsePaciente = response.data;
+
+    let formatedPacienteResults = responsePaciente.resultados_pacientes.map(r => {
+      r.nome_exame = r.exames.nome;
+      r.unidade_exame = r.exames.unidade;
       r.data_exame = r.data_exame.split('T')[0];
       return r;
-    }).sort((a, b) => a.nome_exame.localeCompare(b.nome_exame, 'pt-br'));
-    
+    });
     
     setPatient({
       nome: responsePaciente.nome,
@@ -117,12 +146,32 @@ export default function PatientReport() {
   }
 
   async function handleDeletePatient() {
-    await axios.delete(`${import.meta.env.VITE_LOCALHOST_API_BASE_URL}/patients/${patientId}`); 
-    navigate('/exams/list', { replace: true });
-    setConfirmationModal({
-      ...confirmationModal,
-      show: false,
-    });
+    showAlertComponent(
+      'Excluindo paciente...',
+      'info',
+      true,
+      setAlert
+    );
+
+    const response = await patientsController.deletePatient(patientId);
+
+    if(response.status !== 200) {
+      showAlertComponent(
+        response.message,
+        'error',
+        true,
+        setAlert
+      );
+      return;
+    }
+
+    showAlertComponent(
+      'Paciente excluído com sucesso! Redirecionando para lista de pacientes...',
+      'success',
+      true,
+      setAlert
+    );
+    setTimeout(() => {navigate('/exams/list', { replace: true, state: { contentTobeShown: 'Pacientes' } }); }, 3000);
   }
 
   useEffect(() => {
@@ -133,6 +182,12 @@ export default function PatientReport() {
 
   return (
     <main className={ `wrapper ${styles["patient"]}` }>
+      <Alert
+        message={ alert.message }
+        type={ alert.type }
+        show={ alert.show }
+      />
+
       <AddPatientResultModal pacienteId={ patientId }/>
 
       <ConfirmationModal onConfirm={ handleDeletePatient }/>
@@ -238,20 +293,10 @@ function PatientResults({ patient, setExamNameTobeReferenced, setResultsTobeRefe
 
   function groupResultsByDate() {    
     const formatedPacienteResults = {};
-    patient.resultados.forEach(result => {
-      const [ exam ] = patient.exames.filter(exame => exame.id === result.exame_id);
-      const valores_referencia = exam.resultados.filter(r => r.sexo === 'ambos' || r.sexo === patient.sexo);
-      const formatedResult = {
-        nome_exame: result.nome_exame,
-        unidade_exame: result.unidade_exame,
-        data_exame: result.data_exame,
-        valores_referencia: valores_referencia,
-        resultado: result.resultado,
-        classification: returnPatientResultClassification(result.resultado, valores_referencia)
-      };
-
-      formatedResult['shouldBeHighlighted'] = formatedResult.classification.toLowerCase() !== 'ideal';
-
+    const orderedResults = patient.resultados.sort((a, b) => new Date(b.data_exame) - new Date(a.data_exame));
+    orderedResults.forEach(result => {
+      const formatedResult = returnFormatedResult(result, patient.sexo);
+      
       if(formatedPacienteResults[result.data_exame]) {
         formatedPacienteResults[result.data_exame].push(formatedResult);
       }
@@ -264,20 +309,10 @@ function PatientResults({ patient, setExamNameTobeReferenced, setResultsTobeRefe
   
   function groupResultsByExam() {
     const pacienteResultsGroupedbyExam = {};
-    patient.resultados.forEach(result => {
-      const [ exam ] = patient.exames.filter(exame => exame.id === result.exame_id);
-      const valores_referencia = exam.resultados.filter(r => r.sexo === 'ambos' || r.sexo === patient.sexo);
-      const formatedResult = {
-        nome_exame: result.nome_exame,
-        unidade_exame: result.unidade_exame,
-        data_exame: result.data_exame,
-        valores_referencia: valores_referencia,
-        resultado: result.resultado,
-        classification: returnPatientResultClassification(result.resultado, valores_referencia)
-      };
-
-      formatedResult['shouldBeHighlighted'] = formatedResult.classification.toLowerCase() !== 'ideal';
-
+    const orderedResults = patient.resultados.sort((a, b) => a.nome_exame.localeCompare(b.nome_exame, 'pt-br'));
+    orderedResults.forEach(result => {
+      const formatedResult = returnFormatedResult(result, patient.sexo);
+      
       if(pacienteResultsGroupedbyExam[result.nome_exame]) {
         pacienteResultsGroupedbyExam[result.nome_exame].push(formatedResult);
       }
