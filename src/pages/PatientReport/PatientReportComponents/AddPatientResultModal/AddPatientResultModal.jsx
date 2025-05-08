@@ -7,6 +7,10 @@ import styles from './styles.module.css';
 import { FaCheck, FaXmark } from "react-icons/fa6";
 import { returnIconSizeByWindowSize, showAlertComponent } from "../../../../utils";
 import axios from "axios";
+import { Exams, PatientResults } from "../../../../classes";
+
+const patientResultsController = new PatientResults();
+const examsController = new Exams();
 
 function returnShowClass(openAddPatientResultModal) {
   if(openAddPatientResultModal) {
@@ -36,20 +40,9 @@ export default function AddPatientResultModal({ pacienteId }) {
   });
 
   async function loadAllExams() {
-    let allExams = await axios.get(`${import.meta.env.VITE_LOCALHOST_API_BASE_URL}/exams/`);
-    setAllExams(allExams.data.exams);
+    const response = await examsController.getAll();
+    setAllExams(response.data);
   } 
-
-  useEffect(() => { 
-    if(openAddPatientResultModal) {
-      if (allExams.length === 0) { loadAllExams(); }
-      setAlert({ ...alert, show: false });
-      setSelectedExam(0);
-      setSelectedExamDate('');
-      setSelectedExamResult(0);
-      formRef.current.reset();
-    }
-  }, [openAddPatientResultModal]);
 
   function handleCloseIconClick(e) {
     setOpenAddPatientResultModal(false);
@@ -146,30 +139,27 @@ export default function AddPatientResultModal({ pacienteId }) {
       setLoading(true);
 
       showAlertComponent(
-        'Salvando Resultado...',
+        'Salvando resultado do paciente...',
         'info',
         true,
         setAlert
       );
 
-      await axios.post(
-        `${import.meta.env.VITE_LOCALHOST_API_BASE_URL}/patient-results/`, 
-        { 
-          paciente_id: pacienteId,
-          exame_id: selectedExam,
-          resultado: selectedExamResult,
-          data_exame: selectedExamDate
-        }
-      );
+      await patientResultsController.createPatientResults({
+        paciente_id: pacienteId,
+        exame_id: selectedExam,
+        resultado: selectedExamResult,
+        data_exame: selectedExamDate
+      });
 
       showAlertComponent(
-        'Exame salvo com sucesso!',
+        'Resultado do paciente salvo com sucesso!',
         'success',
         true,
         setAlert
       );
 
-      setOpenAddPatientResultModal(false);      
+      setOpenAddPatientResultModal(false);   
     } catch (error) {
       console.log(error);
       console.log(error.name);
@@ -188,6 +178,17 @@ export default function AddPatientResultModal({ pacienteId }) {
     }
 
   }
+
+  useEffect(() => { 
+    if(openAddPatientResultModal) {
+      if (allExams.length === 0) { loadAllExams(); }
+      setAlert({ ...alert, show: false });
+      setSelectedExam(0);
+      setSelectedExamDate('');
+      setSelectedExamResult(0);
+      formRef.current.reset();
+    }
+  }, [openAddPatientResultModal]);
 
   return (
     <>
