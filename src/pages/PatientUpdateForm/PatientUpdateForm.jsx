@@ -1,39 +1,25 @@
 import styles from "./styles.module.css";
-import axios from "axios";
-import { useEffect, useRef, useState } from "react";
-import { FaArrowLeft, FaCheck, FaChevronDown, FaCircleCheck, FaCircleInfo, FaCirclePlus, FaDownload, FaEye, FaTrash, FaUpload, FaXmark } from "react-icons/fa6";
-import { Alert, Backdrop, ConfirmationModal, ExamResultsRefereceTableModal, Loader } from "../../components";
+import { useEffect, useState } from "react";
+import { FaArrowLeft, FaCheck, FaTrash } from "react-icons/fa6";
+import { Alert, ConfirmationModal, Loader } from "../../components";
 import { returnIconSizeByWindowSize, showAlertComponent } from "../../utils";
 import { useAtom } from "jotai";
-import { AddPatientResultModalAtom, ConfirmationModalAtom, ExamReaderAddExamAtom, ExamResultsRefereceTableModalAtom, IconSizeAtom, ShowBackdropAtom } from "../../jotai";
+import { ConfirmationModalAtom } from "../../jotai";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { EmptyExamNameError, EmptyExamResultsError } from "../../classes";
+import { Exams, Patients, PatientResults } from "../../classes";
 import { AddPatientResultModal } from "./ExamReaderPatientFormComponents";
 import { FormFieldError } from "../../classes/Error";
 
+const examsController = new Exams();
+const patientsController = new Patients();
+const patientsResultsController = new PatientResults();
 
+function scrollwindowToTop() {
+  window.scrollTo({top: 0, behavior: 'smooth' });
+}
 
 function returnFormateddate(date) {
   return date.split('-').reverse().join('/');
-}
-
-async function updatePatientDataOnDataBase(id, data) {
-  await axios.patch(`${import.meta.env.VITE_LOCALHOST_API_BASE_URL}/patients/${id}`, 
-    data
-  );
-}
-
-async function updatePatientResultsOnDataBase(data) {
-  await axios.patch(
-    `${import.meta.env.VITE_LOCALHOST_API_BASE_URL}/patient-results/`, 
-    data
-  );
-}
-
-async function deletePatientResultOnDataBase(id) {
-  await axios.delete(
-    `${import.meta.env.VITE_LOCALHOST_API_BASE_URL}/patient-results/${id}`
-  );
 }
 
 export default function PatientUpdateForm() {
@@ -61,11 +47,23 @@ export default function PatientUpdateForm() {
   });
 
   async function getPatientByRouteId() {
-    let responsePaciente = await axios.get(`${import.meta.env.VITE_LOCALHOST_API_BASE_URL}/patients/${patientId}`);
-    responsePaciente = responsePaciente.data;
+    const response = await patientsController.getPatientById(patientId);
+
+    if(response.status !== 200) {
+      showAlertComponent(
+        `${response.message} Redirecionando para a lista de pacientes...`,
+        'error',
+        true,
+        setAlert
+      );
+      setTimeout(() => {navigate('/exams/list', { replace: true, state: { contentTobeShown: 'Pacientes' } }); }, 3000);
+      return;
+    }
+
+    const responsePaciente = response.data;
     const formatedPacienteResults = {};
-    responsePaciente.resultados.forEach(result => {
-      const [ exam ] = responsePaciente.exames.filter(exame => exame.id === result.exame_id);
+    responsePaciente.resultados_pacientes.forEach(result => {
+      const exam = result.exames;
       const examDate = result.data_exame.split('T')[0];
       const formatedResult = {
         id: result.id,
@@ -93,8 +91,8 @@ export default function PatientUpdateForm() {
   }
 
   async function getAllExams() {
-    let response = await axios.get(`${import.meta.env.VITE_LOCALHOST_API_BASE_URL}/exams/`);
-    setAllExams(response.data.exams);
+    let response = await examsController.getAll();
+    setAllExams(response.data);
   }
 
   function handlePatientNameChange(e) {
@@ -125,63 +123,53 @@ export default function PatientUpdateForm() {
   }
 
   async function handleDeleteExamOrResult() {
-    try {
-      setConfirmationModal({
-        ...confirmationModal,
-        show: false,
-      });
+    scrollwindowToTop();
+    setConfirmationModal({
+      ...confirmationModal,
+      show: false,
+    });
 
-      setLoading(true);
-      
-      setAlert({
-        message: 'Deletando resultado...',
-        type: 'info',
-        show: true
-      });
+    setLoading(true);
 
-      let resultsCopy = structuredClone(patientResults);
-      const patientResultId = resultsCopy[resultDateToBeDeleted][resultIndexToBeDeleted].id;
-      resultsCopy[resultDateToBeDeleted] = resultsCopy[resultDateToBeDeleted].filter((_, i) => i !== resultIndexToBeDeleted);
-      resultsCopy = Object.fromEntries(Object.entries(resultsCopy).filter(([_, v]) => v.length > 0));
+    showAlertComponent(
+      'Deletando resultado...',
+      'info',
+      true,
+      setAlert
+    );
 
-      await deletePatientResultOnDataBase(patientResultId);
-      setPatientResults(resultsCopy);
-      setResultIndexToBeDeleted(null);
-      setResultDateToBeDeleted(null);
-    
-      setAlert({
-        message: 'Resultado deletado com sucesso!',
-        type: 'success',
-        show: true
-      });
-    } catch (error) {
-      let alertMessage = '';
+    let resultsCopy = structuredClone(patientResults);
+    const patientResultId = resultsCopy[resultDateToBeDeleted][resultIndexToBeDeleted].id;
+    const response = await patientsResultsController.deleteExamResult(patientResultId);
 
-      if(error.name === 'AxiosError') {
-        alertMessage = error.response.data.message;
-        console.log(error.response)
-      }
-
-      alertMessage = error.message;
-      
-      setAlert({
-        message: alertMessage,
-        type: 'error',
-        show: true
-      });      
-    } finally {
-      setLoading(false);
-      setTimeout(() => {
-        setAlert({
-          ...alert,
-          show: false
-        })
-      }, 5000);
-
+    if(response.status !== 200) {
+      showAlertComponent(
+        response.message,
+        'error',
+        true,
+        setAlert
+      );
+      return;
     }
+
+    resultsCopy[resultDateToBeDeleted] = resultsCopy[resultDateToBeDeleted].filter((_, i) => i !== resultIndexToBeDeleted);
+    resultsCopy = Object.fromEntries(Object.entries(resultsCopy).filter(([_, v]) => v.length > 0));
+
+    setLoading(false);
+    setPatientResults(resultsCopy);
+    setResultIndexToBeDeleted(null);
+    setResultDateToBeDeleted(null);
+
+    showAlertComponent(
+      'Resultado deletado com sucesso!',
+      'success',
+      true,
+      setAlert
+    );
   }
 
   async function handleFormSubmit(e) {
+    scrollwindowToTop();
     e.preventDefault();
     
     try {
@@ -194,67 +182,66 @@ export default function PatientUpdateForm() {
         throw new FormFieldError('Todos os campos do formulário devem estar preenchidos!');
       }
 
+      setLoading(true);
+
       const results = [];
       Object.values(patientResults).forEach(r => {
         r.forEach(res => {
           const tempResult = Number(String(res.resultado).replace(',', '.'));
           if(isNaN(tempResult)) throw new FormFieldError('Os resultados deve conter apenas números válidos.');
-          res.resultado = tempResult;
-          results.push(res)
+          results.push({
+            id: res.id,
+            exame_id: res.id_exame,
+            paciente_id: patientId,
+            data_exame: res.data_exame,
+            resultado: tempResult
+          })
         });
       });
 
-      setLoading(true);
-
-      setAlert({
-        message: 'Atualizando Dados do exame...',
-        type: 'info',
-        show: true
-      });
-
-      await updatePatientDataOnDataBase(
-        patientId, 
-        {
-          nome: patientName,
-          data_nascimento: patientBirthdate.split('T')[0],
-          sexo: patientSex
-        }
+      showAlertComponent(
+        'Atualizando Dados do paciente...',
+        'info',
+        true,
+        setAlert
       );
-      await updatePatientResultsOnDataBase(results);
-      
-      setAlert({
-        message: 'Paciente atualizado com sucesso!',
-        type: 'success',
-        show: true
-      });
+
+      const updatePatientReponse = await patientsController.updatePatient(
+        patientId,
+        patientName,
+        patientBirthdate.split('T')[0],
+        patientSex
+      );
+      const updatePatientResultsReponse = await patientsResultsController.updateExamResults(results);
+
+      if(
+        (updatePatientReponse && updatePatientReponse.status !== 200) ||
+        (updatePatientResultsReponse && updatePatientResultsReponse.status !== 200)
+      ) {
+        throw Error(updatePatientReponse.message || updatePatientResultsReponse.message);
+      }
+
+      showAlertComponent(
+        'Paciente atualizado com sucesso!',
+        'success',
+        true,
+        setAlert
+      );
 
       setTimeout(() => navigate(`/patients/${patientId}`), 2000);
     } catch (error) {      
-      let alertMessage = '';
+      let alertMessage = error.message || 'Ocorreu um erro ao atualizar os dados do paciente.';
 
       alertMessage = error.message;
-
-      if(error.name === 'AxiosError') {
-        alertMessage = error.response.message;
-        console.log(error.response)
-      }
       
-      setAlert({
-        message: alertMessage,
-        type: 'error',
-        show: true
-      });
-      
+      showAlertComponent(
+        alertMessage,
+        'error',
+        true,
+        setAlert
+      );      
     } finally {
       setLoading(false);
-      window.scrollTo({top: 0, behavior: 'smooth' });
-
-      setTimeout(() => {
-        setAlert({
-          ...alert,
-          show: false
-        })
-      }, 5000);
     }
   }
 
@@ -345,7 +332,7 @@ export default function PatientUpdateForm() {
 
               <h2 className={ styles["patient__form-title"] }>Resultados do Paciente</h2>
 
-              <PatientResults 
+              <PatientResultsList 
                 results={ patientResults }
                 allExams={ allExams }
                 handleResultChange={ handleResultChange }
@@ -377,7 +364,7 @@ function Splash() {
   );
 }
 
-function PatientResults({ results, allExams, handleResultChange, openDeleteConfirmationModal }) {
+function PatientResultsList({ results, allExams, handleResultChange, openDeleteConfirmationModal }) {
   return (
     <>
       {
