@@ -6,7 +6,6 @@ import { Alert, ConfirmationModal, Loader, RefereceTable } from "../../../../com
 import styles from './styles.module.css';
 import { FaMagnifyingGlass, FaTrash } from "react-icons/fa6";
 import { returnIconSizeByWindowSize, searchTermOnHTMLElement, showAlertComponent } from "../../../../utils";
-import { FaRegEdit } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import AddExamModal from "../AddExamModal/AddExamModal";
 import { Exams } from "../../../../classes";
@@ -197,18 +196,12 @@ function List({ exams, setExamIdToBeDeleted, populateExamNameParagraphsRefs }) {
         exams.map((exam, index) => (
           <div ref={ populateExamNameParagraphsRefs } className={ styles["examlist__exam"] } key={ index }>
             <div className={ styles["examlist__exam-info"] }>
-              <div className={ styles["examlist__exam-info-text"] }>
+              <Link to={`/exams/${exam.id}`} className={ styles["examlist__exam-info-text"] }>
                 <p className={ `examName ${styles["examlist__exam-name"]}` }>{ exam.nome }</p>
                 <p className={ styles["examlist__exam-description"] }> ({ exam.resultados_exames.length } resultados)</p>
-              </div>
+              </Link>
 
               <div className={ styles["examlist__exam-options"] }>
-                <Link to={ `/exams/${exam.id}` }>
-                  <FaRegEdit 
-                    size={ returnIconSizeByWindowSize() }
-                    className={ styles["examlist__edit-icon"] }
-                  />
-                </Link>
                 <FaTrash 
                   size={ returnIconSizeByWindowSize() }
                   className={ styles["examlist__delete-icon"] }
