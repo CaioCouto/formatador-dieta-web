@@ -16,7 +16,7 @@ import {
   Login
 } from './pages';
 
-const blockedPaths = ['/login'];
+const blockedPaths = ['/'];
 
 export default function App() {
   const { pathname } = useLocation();
@@ -32,8 +32,7 @@ export default function App() {
         </>
       }
       <Routes>
-        <Route exact path="/" element={ <Home /> }/>
-        <Route exact path="/login" element={ <Login /> }/>
+        <Route exact path="/" element={ <Login /> }/>
         <Route exact path="/formatador" element={ <Formatter /> }/>
         <Route path="exams">
           <Route exact path="list" element={ <ExamReader /> }/>
