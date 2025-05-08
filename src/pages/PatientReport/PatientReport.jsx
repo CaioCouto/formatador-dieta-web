@@ -83,6 +83,14 @@ function returnFormatedResult(result, patientGender) {
   return formatedResult;
 }
 
+function orderResultsByExamDate(results){
+  return results.sort((a, b) => new Date(b.data_exame) - new Date(a.data_exame));
+}
+
+function orderResultsByName(results){
+  return results.sort((a, b) => a.nome_exame.localeCompare(b.nome_exame, 'pt-br'));
+}
+
 export default function PatientReport() {
   const patientId = Number(useParams('id').id);
   const navigate = useNavigate();
@@ -293,7 +301,7 @@ function PatientResults({ patient, setExamNameTobeReferenced, setResultsTobeRefe
 
   function groupResultsByDate() {    
     const formatedPacienteResults = {};
-    const orderedResults = patient.resultados.sort((a, b) => new Date(b.data_exame) - new Date(a.data_exame));
+    const orderedResults = orderResultsByExamDate(patient.resultados);
     orderedResults.forEach(result => {
       const formatedResult = returnFormatedResult(result, patient.sexo);
       
@@ -304,12 +312,15 @@ function PatientResults({ patient, setExamNameTobeReferenced, setResultsTobeRefe
         formatedPacienteResults[result.data_exame] = [formatedResult];
       }
     });
+    Object.keys(formatedPacienteResults).forEach(key => {
+      formatedPacienteResults[key] = orderResultsByName(formatedPacienteResults[key]);
+    })
     setGroupedResults(formatedPacienteResults);
   }
   
   function groupResultsByExam() {
     const pacienteResultsGroupedbyExam = {};
-    const orderedResults = patient.resultados.sort((a, b) => a.nome_exame.localeCompare(b.nome_exame, 'pt-br'));
+    const orderedResults = orderResultsByName(patient.resultados);
     orderedResults.forEach(result => {
       const formatedResult = returnFormatedResult(result, patient.sexo);
       
