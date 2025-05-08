@@ -86,6 +86,7 @@
 }
 
 .patient__results-wrapper {
+  color: var(--white);
   background-color: var(--primary);
   padding: 20px;
   border-radius: var(--borderRadius10);
@@ -129,6 +130,7 @@
   display: flex;
   width: 100%;
   flex-grow: 1;
+  background-color: var(--accent-pink);
   justify-content: space-between;
 }
 
