@@ -12,7 +12,6 @@ export default function AppWrapper({ children }) {
       const blockedPaths = ['/login'];
 
       if (blockedPaths.includes(pathname)) {
-        console.log(`Bloqueando modal em rota ${pathname}`);
         return;
       }
 

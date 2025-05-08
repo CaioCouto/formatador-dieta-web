@@ -131,8 +131,6 @@ export default class Exams {
         }
       );
 
-      console.log(response);
-
       return {
         status: 200,
         examId: response.data[0].id

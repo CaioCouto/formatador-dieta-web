@@ -18,7 +18,6 @@ export default class User {
       };
     } catch (error) {
       let statusCode = 500, message = 'Ocorreu um erro ao efetuar login.';
-      console.log(error)
       if(error.name === 'AxiosError') {
         if(error.response) {
           statusCode = error.response.status;
@@ -31,15 +30,6 @@ export default class User {
         message: message,
         data: {}
       };
-    }
-  }
-
-  static async validateSession() {
-    try {
-      const response = await axios.get(`${apiBaseURL}/users/validate-session`);
-      console.log(response);
-    } catch (error) {
-      
     }
   }
 }
