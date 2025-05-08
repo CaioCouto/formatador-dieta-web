@@ -77,6 +77,8 @@
   display: flex;
   flex-direction: column;
   gap: 5px;
+  color: var(--white);
+  cursor: pointer;
 }
 
 .examlist__exam-options {
