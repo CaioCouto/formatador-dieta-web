@@ -3,10 +3,13 @@ import logo from '../../assets/logo-only-rb.svg';
 import HeaderMenu from '../HeaderMenu';
 import Backdrop from '../Backdrop';
 import { FaBars, FaXmark } from 'react-icons/fa6';
-import { useEffect, useRef } from 'react';
+import { useRef } from 'react';
 import { useAtom } from 'jotai';
 import { OpenMobileMenuAtom, ShowHeaderAtom } from '../../jotai';
+import { User } from '../../classes';
+import { useNavigate } from 'react-router-dom';
 
+const userController = new User();
 
 export default function Header() {
   const [ showHeader, setShowHeader ] = useAtom(ShowHeaderAtom);
@@ -35,11 +38,28 @@ export default function Header() {
           mobileMenuBackdroprRef={ mobileMenuBackdroprRef }
         />
 
+        <UserSection/>
+
         <section className={ styles['header__menu-icon-wrapper'] } onClick={ handleMobileMenuIconClick }>
           <FaBars size={ 32 }/>
         </section>
       </div>
     </header>
+  );
+}
+
+function UserSection () {
+  const navigate = useNavigate();
+
+  async function handleSignOutClick() {
+    await userController.signOut();
+    navigate('/login', { replace: true });
+  }
+
+  return (
+    <section className={ styles['header__menu-user'] }>
+      <p onClick={ handleSignOutClick } style={{ cursor: 'pointer' }}>Logout</p>
+    </section>
   );
 }
 
