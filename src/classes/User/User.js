@@ -2,6 +2,10 @@ import { axiosInstance } from "../../utils";
 
 const userRoute = `/users`;
 
+function fireAuthorizedSessionEvent() {
+  window.dispatchEvent(new CustomEvent('authorized-session'));
+}
+
 export default class User {
   async signin(email, password) {
     try {
@@ -11,6 +15,7 @@ export default class User {
       );
 
       localStorage.setItem('user_data', JSON.stringify(response.data));
+      fireAuthorizedSessionEvent();
 
       return {
         status: 200,
@@ -60,6 +65,7 @@ export default class User {
   async validadeSession() {
     try {
       await axiosInstance.get('');
+      fireAuthorizedSessionEvent();
       return {
         status: 200
       };
