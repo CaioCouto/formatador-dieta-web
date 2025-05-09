@@ -1,16 +1,17 @@
 import styles from './styles.module.css';
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Alert, Loader } from '../../components';
 import { User } from '../../classes';
-import { showAlertComponent } from '../../utils';
+import { showAlertComponent, validateUserSession } from '../../utils';
 import { useNavigate } from 'react-router-dom';
 import { useAtom } from 'jotai';
-import { ShowFooterAtom, ShowHeaderAtom } from '../../jotai';
+import { OpenUserAuthenticationModalAtom, ShowFooterAtom, ShowHeaderAtom } from '../../jotai';
 
 const userController = new User();
 
 export default function Login() {
   const navigate = useNavigate();
+  const [_, setOpenUserAuthenticationModal] = useAtom(OpenUserAuthenticationModalAtom);
   const [ showHeader, setShowHeader ] = useAtom(ShowHeaderAtom);
   const [ showFooter, setShowFooter ] = useAtom(ShowFooterAtom);
 
@@ -22,6 +23,23 @@ export default function Login() {
     message: '',
     type: 'success'
   });
+
+  async function validateUser() {
+    const sessionValidated = await validateUserSession();
+    
+    if (sessionValidated) {
+      setLoading(true);
+      showAlertComponent(
+        'Sessão autenticada. Redirecionando...', 
+        'success', 
+        true, 
+        setAlert
+      );
+      setOpenUserAuthenticationModal(false);
+      setTimeout(() => {navigate('/exams/list', { replace: true }); }, 2000);
+    }
+
+  }
 
   function handleEmailChange(e) {
     setEmail(e.target.value)
@@ -48,6 +66,10 @@ export default function Login() {
     navigate('/exams/list', { replace: true });
     
   }
+
+  useEffect(() => {
+    validateUser();
+  }, []);
 
   return (
     <main className={ styles['login'] }>  
