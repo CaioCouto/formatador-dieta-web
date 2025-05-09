@@ -56,4 +56,26 @@ export default class User {
       };
     }
   }
+
+  async validadeSession() {
+    try {
+      await axiosInstance.get('');
+      return {
+        status: 200
+      };
+    } catch (error) {
+      let statusCode = 500, message = 'Ocorreu um erro ao validar a sessão.';
+      if(error.name === 'AxiosError') {
+        if(error.response) {
+          statusCode = error.response.status;
+          message = error.response.data.message;
+        }
+      }
+      
+      return {
+        status: statusCode,
+        message: message
+      };
+    }
+  }
 }
