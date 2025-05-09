@@ -36,7 +36,7 @@ export default function UserReauthorizationModal() {
   function redirectToLogin() {
     window.dispatchEvent(new CustomEvent('user-auth-cancelled'));
     setOpenUserAuthenticationModalModal(false);
-    navigate('/login', { replace: true });
+    navigate('/', { replace: true });
   } 
 
   function handleEmailChange(e) {
