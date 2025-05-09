@@ -1,7 +1,6 @@
 import './App.css';
-import { AppWrapper, Footer, Header, UserReauthorizationModal } from './components';
+import {Footer, Header, UserReauthorizationModal } from './components';
 import { 
-  BrowserRouter as Router,
   Routes,
   Route,
   useLocation
@@ -11,12 +10,10 @@ import {
   ExamReaderExamForm,
   PatientReport,
   Formatter,
-  Home,
   PatientUpdateForm,
   Login
 } from './pages';
-
-const blockedPaths = ['/'];
+import { blockedPaths } from './utils';
 
 export default function App() {
   const { pathname } = useLocation();
