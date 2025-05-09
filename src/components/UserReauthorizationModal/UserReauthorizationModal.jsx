@@ -54,15 +54,17 @@ export default function UserReauthorizationModal() {
     const response = await userController.signin(email, password);
 
     if(response.status !== 200) {
-      return showAlertComponent(response.message, 'error', true, setAlert);
+      showAlertComponent(response.message, 'error', true, setAlert);
     }
-
-    setEmail('');
-    setPassword('');
+    else {
+      setEmail('');
+      setPassword('');
+      setRefreshing(false);
+      processQueue(null, true);
+      setOpenUserAuthenticationModalModal(false);
+    }
     setLoading(false);
-    setRefreshing(false);
-    processQueue(null, true);
-    setOpenUserAuthenticationModalModal(false);
+
   }
 
   useEffect(() => {
