@@ -1,14 +1,14 @@
 import { useAtom } from "jotai";
 import { useEffect, useRef, useState } from "react";
-import { ConfirmationModalAtom, ExamReaderAddPatientAtom } from "../../../../jotai";
-import { Alert, ConfirmationModal, Loader } from "../../../../components";
+import { ConfirmationModalAtom, ExamReaderAddPatientAtom } from "../../jotai";
+import { Alert, ConfirmationModal, ExamsAndPatientsListingOptions, Loader } from "../../components";
 
 import styles from './styles.module.css';
 import { FaMagnifyingGlass, FaTrash } from "react-icons/fa6";
-import { returnIconSizeByWindowSize, searchTermOnHTMLElement, showAlertComponent } from "../../../../utils";
+import { returnIconSizeByWindowSize, searchTermOnHTMLElement, showAlertComponent } from "../../utils";
 import { useNavigate } from "react-router-dom";
-import AddPatientModal from "../AddPatientModal";
-import { Patients } from "../../../../classes";
+import AddPatientModal from "./ExamListComponents/AddPatientModal";
+import { Patients } from "../../classes";
 
 const patientsController = new Patients();
 
@@ -120,7 +120,7 @@ export default function PatientList() {
   useEffect(() => { getAllPatients(); }, []);
 
   return (
-    <section className={ styles["examlist"] }>
+    <main className={ `wrapper ${styles["examlist"]}` }>
       <ConfirmationModal
         onConfirm={ deletePatient }
       />
@@ -131,6 +131,8 @@ export default function PatientList() {
         type={ alert.type }
         show={ alert.show }
       />
+
+      <ExamsAndPatientsListingOptions />
 
 
       <div  className={ styles["examlist__header"] }>
@@ -164,7 +166,7 @@ export default function PatientList() {
           />
         }
       </div>
-    </section>
+    </main>
   );
 }
 

@@ -1,14 +1,14 @@
 import { useAtom } from "jotai";
 import { useEffect, useRef, useState } from "react";
-import { ConfirmationModalAtom, ExamReaderAddExamAtom } from "../../../../jotai";
-import { Alert, ConfirmationModal, Loader, RefereceTable } from "../../../../components";
+import { ConfirmationModalAtom, ExamReaderAddExamAtom } from "../../jotai";
+import { Alert, ConfirmationModal, ExamsAndPatientsListingOptions, Loader, RefereceTable } from "../../components";
 
 import styles from './styles.module.css';
 import { FaMagnifyingGlass, FaTrash } from "react-icons/fa6";
-import { returnIconSizeByWindowSize, searchTermOnHTMLElement, showAlertComponent } from "../../../../utils";
+import { returnIconSizeByWindowSize, searchTermOnHTMLElement, showAlertComponent } from "../../utils";
 import { Link } from "react-router-dom";
-import AddExamModal from "../AddExamModal/AddExamModal";
-import { Exams } from "../../../../classes";
+import { Exams } from "../../classes";
+import { AddExamModal } from "./ExamListComponents";
 
 const examsController = new Exams();
 
@@ -127,12 +127,14 @@ export default function ExamList() {
   }, []);
 
   return (
-    <section className={ styles["examlist"] }>
+    <main className={ `wrapper ${styles["examlist"]}` }>
       <ConfirmationModal
         message={ confirmationModal.message }
         onConfirm={ deleteExam }
       />
       <AddExamModal /> 
+
+      <ExamsAndPatientsListingOptions />
 
 
       <div  className={ styles["examlist__header"] }>
@@ -172,7 +174,7 @@ export default function ExamList() {
           />
         }
       </div>
-    </section>
+    </main>
   );
 }
 

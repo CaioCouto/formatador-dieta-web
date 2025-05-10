@@ -6,12 +6,14 @@ import {
   useLocation
 } from 'react-router-dom';
 import {
-  ExamReader,
+  ContentList,
   ExamReaderExamForm,
   PatientReport,
   Formatter,
   PatientUpdateForm,
-  Login
+  Login,
+  ExamList,
+  PatientList
 } from './pages';
 import { blockedPaths } from './utils';
 
@@ -32,12 +34,13 @@ export default function App() {
         <Route exact path="/" element={ <Login /> }/>
         <Route exact path="/formatador" element={ <Formatter /> }/>
         <Route path="exams">
-          <Route exact path="list" element={ <ExamReader /> }/>
+          <Route index element={ <ExamList /> }/>
           <Route exact path=":id" element={ <ExamReaderExamForm /> }/>
         </Route>
         <Route path="patients">
-          <Route exact path="edit/:id" element={ <PatientUpdateForm /> }/>
+          <Route index element={ <PatientList /> }/>
           <Route exact path=":id" element={ <PatientReport /> }/>
+          <Route exact path="edit/:id" element={ <PatientUpdateForm /> }/>
         </Route>
       </Routes>
       {
