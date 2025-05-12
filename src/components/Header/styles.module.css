@@ -24,7 +24,7 @@
 
 .header__menu-mobile-backdrop,
 .header__menu-mobile-wrapper {
-  position: absolute;
+  position: fixed;
   top: 0;
   bottom: 0;
   left: 0;
@@ -43,13 +43,14 @@
 
 .header__menu-mobile-wrapper {
   width: 90%;
-  height: 100vh;
   margin-left: 0;
   background-color: var(--primary);
   padding: 10px 0;
   z-index: 1;
   transform: translateX(-100%);
   transition: 250ms ease-in-out;
+  display: flex;
+  flex-direction: column;
 }
 
 .header__menu-mobile-wrapper--show {
