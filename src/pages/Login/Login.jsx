@@ -36,7 +36,7 @@ export default function Login() {
         setAlert
       );
       setOpenUserAuthenticationModal(false);
-      setTimeout(() => {navigate('/exams/list', { replace: true }); }, 2000);
+      setTimeout(() => {navigate('/exams', { replace: true }); }, 2000);
     }
 
   }
@@ -63,7 +63,7 @@ export default function Login() {
     
     setShowHeader(true);
     setShowFooter(true);
-    navigate('/exams/list', { replace: true });
+    navigate('/exams', { replace: true });
     
   }
 

@@ -56,7 +56,7 @@ export default function ExamReaderExamForm() {
         true,
         setAlert
       );
-      setTimeout(() => {navigate('/exams/list', { replace: true }); }, 3000);
+      setTimeout(() => {navigate('/exams', { replace: true }); }, 3000);
       return;
     }
 
@@ -139,7 +139,7 @@ export default function ExamReaderExamForm() {
 
       if(resultIndexToBeDeletedIsNull) {
         await examsController.deleteExam(examId);
-        return navigate('/exams/list', { replace: true });
+        return navigate('/exams', { replace: true });
       }
       const examResultId = examsResults[resultIndexToBeDeleted].id;
       const newResults = examsResults.filter((_, i) => i !== resultIndexToBeDeleted);
@@ -297,7 +297,7 @@ export default function ExamReaderExamForm() {
               : null
             }
 
-            <Link to="/exams/list" className={ styles["editor__form-back"] }>
+            <Link to="/exams" className={ styles["editor__form-back"] }>
               <FaArrowLeft size={ returnIconSizeByWindowSize() } />
               <span>Lista de Exames</span>
             </Link>
