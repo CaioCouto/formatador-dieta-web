@@ -43,6 +43,7 @@
 
 .header__menu-mobile-wrapper {
   width: 90%;
+  max-width: 300px;
   margin-left: 0;
   background-color: var(--primary);
   padding: 10px 0;
@@ -76,11 +77,18 @@
 }
 
 @media (max-width: 1019px) {
-  .header__menu-wrapper {
+  .header__menu-wrapper,
+  .header__menu-user {
     display: none;
   }
 
   .header__menu-icon-wrapper {
     display: block;
+  }
+}
+
+@media (max-width: 479px) {
+  .header__menu-mobile-wrapper {
+  max-width: unset;
   }
 }

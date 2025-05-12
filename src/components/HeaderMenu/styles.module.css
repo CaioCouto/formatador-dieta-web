@@ -62,7 +62,7 @@
 }
 
 .header__dropdown-link {
-  padding: 16px 16px 0;
+  padding: 16px 16px;
   width: 100%;
   text-align: center;
 }
@@ -85,6 +85,12 @@
     position: static;
     transform: none;
     width: 100%;
+  }
+
+  .header__dropdown-link {
+    padding: 8px 16px;
+    width: 100%;
+    text-align: center;
   }
 
   .header__menu-wrapper {
