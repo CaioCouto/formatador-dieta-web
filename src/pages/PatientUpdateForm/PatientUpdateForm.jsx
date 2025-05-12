@@ -56,7 +56,7 @@ export default function PatientUpdateForm() {
         true,
         setAlert
       );
-      setTimeout(() => {navigate('/exams/list', { replace: true, state: { contentTobeShown: 'Pacientes' } }); }, 3000);
+      setTimeout(() => {navigate('/patients', { replace: true }); }, 3000);
       return;
     }
 

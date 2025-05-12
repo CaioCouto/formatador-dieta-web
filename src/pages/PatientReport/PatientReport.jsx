@@ -29,7 +29,7 @@ function returnPatientAge(birthdate) {
   const [ birthYear, birthMonth, birthDay ] = splittedBirthdate;
   const today = new Date();
   const todayDate = today.getDate();
-  const todayMonth = today.getMonth();
+  const todayMonth = today.getMonth() + 1;
   const age = today.getFullYear() - Number(birthYear);
   const birthdayHasPassed = todayDate >= Number(birthDay) && todayMonth >= Number(birthMonth);
   
@@ -118,7 +118,7 @@ export default function PatientReport() {
         true,
         setAlert
       );
-      setTimeout(() => {navigate('/exams/list', { replace: true, state: { contentTobeShown: 'Pacientes' } }); }, 3000);
+      setTimeout(() => {navigate('/patients', { replace: true }); }, 3000);
       return;
     }
     
@@ -179,7 +179,7 @@ export default function PatientReport() {
       true,
       setAlert
     );
-    setTimeout(() => {navigate('/exams/list', { replace: true, state: { contentTobeShown: 'Pacientes' } }); }, 3000);
+    setTimeout(() => {navigate('/patients', { replace: true, state: { contentTobeShown: 'Pacientes' } }); }, 3000);
   }
 
   useEffect(() => {
@@ -214,7 +214,7 @@ export default function PatientReport() {
           <Splash /> :
           <>
             <section className={ styles["patient__info"] }>
-              <Link to="/exams/list" state={{ contentTobeShown:'Pacientes' }} className={ styles["patient__info-back"] }>
+              <Link to="/patients" className={ styles["patient__info-back"] }>
                 <FaArrowLeft size={ returnIconSizeByWindowSize() } />
                 <span>Lista de Exames</span>
               </Link>
